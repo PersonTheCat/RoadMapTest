@@ -4,21 +4,27 @@ import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class AppWindow {
-
     private final JLabel label;
     private final JFrame window;
+    private final Config config;
 
-    public AppWindow(final BufferedImage image) {
+    public AppWindow(final Config config, final BufferedImage image) {
         this.label = new JLabel();
         this.render(image);
         this.window = createWindow(this.label);
+        this.config = config;
     }
 
     public void onKeyPressed(final int key, final Consumer<AppWindow> event) {
-        this.window.addKeyListener(new KeyTypedListener(this, key, event));
+        this.onKeyPressed(key, (w, e) -> event.accept(w));
+    }
+
+    public void onKeyPressed(final int key, final BiConsumer<AppWindow, KeyEvent> event) {
+        this.window.addKeyListener(new KeyTypedListener(key, event));
     }
 
     public void render(final BufferedImage image) {
@@ -39,23 +45,39 @@ public class AppWindow {
         return window;
     }
 
-    private record KeyTypedListener(AppWindow window, int key, Consumer<AppWindow> event) implements KeyListener {
+    private class KeyTypedListener implements KeyListener {
+        final int key;
+        final BiConsumer<AppWindow, KeyEvent> event;
+        long lastUpdate;
+
+        public KeyTypedListener(final int key, final BiConsumer<AppWindow, KeyEvent> event) {
+            this.key = key;
+            this.event = event;
+            this.lastUpdate = 0;
+        }
 
         @Override
         public void keyTyped(final KeyEvent e) {
             if (this.key == e.getKeyChar()) {
-                this.event.accept(this.window);
+                this.event.accept(AppWindow.this, e);
             }
         }
 
         @Override
         public void keyPressed(final KeyEvent e) {
-            if (this.key == e.getKeyCode()) {
-                this.event.accept(this.window);
+            if (this.isUpdateReady() && this.key == e.getKeyCode()) {
+                this.event.accept(AppWindow.this, e);
+                this.lastUpdate = System.currentTimeMillis();
             }
         }
 
         @Override
-        public void keyReleased(final KeyEvent e) {}
+        public void keyReleased(final KeyEvent e) {
+            this.lastUpdate = 0;
+        }
+
+        private boolean isUpdateReady() {
+            return System.currentTimeMillis() - this.lastUpdate > config.getScrollCoolDown();
+        }
     }
 }

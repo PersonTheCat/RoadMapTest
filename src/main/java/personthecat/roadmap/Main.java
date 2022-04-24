@@ -21,25 +21,25 @@ public class Main {
         final HeightmapGenerator generator = new HeightmapGenerator(this.config, this.rand.nextInt());
 
         void run() {
-            final var window = new AppWindow(this.createNextImage(false, false));
+            final var window = new AppWindow(this.config, this.createNextImage(false, false));
             window.onKeyPressed(KeyEvent.VK_SPACE, w -> w.render(this.createNextImage(false, true)));
             window.onKeyPressed('r', w -> w.render(this.createNextImage(true, false)));
             window.onKeyPressed(KeyEvent.VK_ESCAPE, AppWindow::close);
 
-            window.onKeyPressed(KeyEvent.VK_UP, w -> {
-                this.generator.up();
+            window.onKeyPressed(KeyEvent.VK_UP, (w, e) -> {
+                this.generator.up(e.isShiftDown() ? 3 : 1);
                 w.render(this.createNextImage(false, false));
             });
-            window.onKeyPressed(KeyEvent.VK_DOWN, w -> {
-                this.generator.down();
+            window.onKeyPressed(KeyEvent.VK_DOWN, (w, e) -> {
+                this.generator.down(e.isShiftDown() ? 3 : 1);
                 w.render(this.createNextImage(false, false));
             });
-            window.onKeyPressed(KeyEvent.VK_LEFT, w -> {
-                this.generator.left();
+            window.onKeyPressed(KeyEvent.VK_LEFT, (w, e) -> {
+                this.generator.left(e.isShiftDown() ? 3 : 1);
                 w.render(this.createNextImage(false, false));
             });
-            window.onKeyPressed(KeyEvent.VK_RIGHT, w -> {
-                this.generator.right();
+            window.onKeyPressed(KeyEvent.VK_RIGHT, (w, e) -> {
+                this.generator.right(e.isShiftDown() ? 3 : 1);
                 w.render(this.createNextImage(false, false));
             });
         }

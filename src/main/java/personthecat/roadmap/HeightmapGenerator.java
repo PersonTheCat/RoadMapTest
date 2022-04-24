@@ -30,20 +30,20 @@ public class HeightmapGenerator {
         this.generator = this.createGenerator();
     }
 
-    public void up() {
-        this.yOffset -= 16;
+    public void up(final int count) {
+        this.yOffset -= 16 * count;
     }
 
-    public void down() {
-        this.yOffset += 16;
+    public void down(final int count) {
+        this.yOffset += 16 * count;
     }
 
-    public void left() {
-        this.xOffset -= 16;
+    public void left(final int count) {
+        this.xOffset -= 16 * count;
     }
 
-    public void right() {
-        this.xOffset += 16;
+    public void right(final int count) {
+        this.xOffset += 16 * count;
     }
 
     public BufferedImage generate() {
@@ -54,19 +54,34 @@ public class HeightmapGenerator {
         for (int x = 0; x < w; x++) {
             for (int y = 0; y < h; y++) {
                 final float n = this.generator.getNoiseScaled(x + this.xOffset, y + this.yOffset);
-                image.setRGB(x, y, this.getColor(n).getRGB());
+                image.setRGB(x, y, this.getColor(x, y, n).getRGB());
             }
         }
         return image;
     }
 
-    private Color getColor(final float n) {
+    private Color getColor(final int x, final int y, final float n) {
+        final int grid = this.getGridLine(x, y);
         if (n >= 0) {
-            final int g = 75 + (int) n;
-            final int step = g % this.config.getResolution();
-            return new Color(0, g - step, 0);
+            final int green = 75 + (int) n;
+            final int step = green % this.config.getResolution();
+            return new Color(0, this.cap(green - step - grid), 0);
         }
-        return new Color(0, 0, (int) Math.max(0, 100 + n));
+        final int blue = 100 + (int) n;
+        return new Color(0, 0, this.cap(blue - grid));
+    }
+
+    private int getGridLine(final int x, final int y) {
+        if (x % 32 == 0 || y % 32 == 0) {
+            return 10;
+        } else if (x % 16 == 0 || y % 16 == 0) {
+            return 5;
+        }
+        return 0;
+    }
+
+    private int cap(final int channel) {
+        return Math.max(0, Math.min(255, channel));
     }
 
     private FastNoise createGenerator() {

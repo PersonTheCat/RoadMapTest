@@ -21,6 +21,7 @@ public class Config {
     private int minY = -48;
     private int maxY = 128;
     private int resolution = 12;
+    private int scrollCoolDown = 3;
     private float frequency = 0.009F;
     private float grooveFrequency = 0.1F;
     private boolean hasErrors = false;
@@ -53,6 +54,10 @@ public class Config {
 
     public int getResolution() {
         return this.resolution;
+    }
+
+    public int getScrollCoolDown() {
+        return this.scrollCoolDown;
     }
 
     public float getFrequency() {
@@ -100,8 +105,10 @@ public class Config {
             .ifPresent(i -> this.minY = i);
         this.getInt(json, "maxY", i -> i > 0 && i <= 128, "Must be 1 ~ 128")
             .ifPresent(i -> this.maxY = i);
-        this.getInt(json, "resolution", i -> i >= 0 && i <= this.maxY, "Must be 0 ~ maxY")
+        this.getInt(json, "resolution", i -> i > 0 && i <= this.maxY, "Must be 1 ~ maxY")
             .ifPresent(i -> this.resolution = i);
+        this.getInt(json, "scrollCoolDown", i -> i >= 0, "Must be >= 0")
+            .ifPresent(i -> this.scrollCoolDown = i);
         this.getFloat(json, "frequency", f -> f > 0, "Must be > 0")
             .ifPresent(f -> this.frequency = f);
         this.getFloat(json, "grooveFrequency", f -> f > 0, "Must be > 0")
@@ -154,6 +161,7 @@ public class Config {
             .add("minY", this.minY, "The minimum y-coordinate to generate.")
             .add("maxY", this.maxY, "The maximum y-coordinate to generate.")
             .add("resolution", this.resolution, "The number of y-levels to render as the same color.")
+            .add("scrollCoolDown", this.scrollCoolDown, "The scroll delay in ms.")
             .add("frequency", this.frequency, "Noise frequency for the main noise map.")
             .add("grooveFrequency", this.grooveFrequency, "Frequency for the groove noise.");
     }
