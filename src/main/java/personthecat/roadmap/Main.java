@@ -19,6 +19,7 @@ public class Main {
         final Config config = new Config(new File("config.xjs"));
         final Random rand = new Random();
         final HeightmapGenerator generator = new HeightmapGenerator(this.config, this.rand.nextInt());
+        AppWindow window;
 
         void run() {
             final var window = new AppWindow(this.config, this.createNextImage(false, false));
@@ -42,12 +43,20 @@ public class Main {
                 this.generator.right(e.isShiftDown() ? 3 : 1);
                 w.render(this.createNextImage(false, false));
             });
+            this.window = window;
         }
 
         BufferedImage createNextImage(final boolean reload, final boolean newSeed) {
             if (reload) {
+                final int oH = this.config.getChunkHeight();
+                final int oW = this.config.getChunkWidth();
                 this.config.reloadFromDisk();
                 this.generator.reload();
+                if (oH != this.config.getChunkHeight() || oW != this.config.getChunkWidth()) {
+                    if (this.window != null) {
+                        this.window.pack();
+                    }
+                }
             }
             if (newSeed) {
                 this.generator.next(this.rand.nextInt());

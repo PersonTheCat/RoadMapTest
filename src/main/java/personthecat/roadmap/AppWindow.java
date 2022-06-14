@@ -31,6 +31,12 @@ public class AppWindow {
         this.label.setIcon(new ImageIcon(image));
     }
 
+    public void pack() {
+        final int width = this.config.getChunkWidth() << 4;
+        final int height = this.config.getChunkHeight() << 4;
+        this.window.setSize(width, height);
+    }
+
     public void close() {
         this.window.dispose();
         System.exit(0);
