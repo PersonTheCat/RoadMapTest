@@ -73,9 +73,9 @@ public class HeightmapGenerator {
 
     private int getGridLine(final int x, final int y) {
         if (x % 32 == 0 || y % 32 == 0) {
-            return 10;
+            return this.config.getGridOpacity();
         } else if (x % 16 == 0 || y % 16 == 0) {
-            return 5;
+            return (this.config.getGridOpacity() + 1) / 2;
         }
         return 0;
     }

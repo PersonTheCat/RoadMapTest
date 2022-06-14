@@ -22,6 +22,7 @@ public class Config {
     private int maxY = 128;
     private int resolution = 12;
     private int scrollCoolDown = 3;
+    private int gridOpacity = 10;
     private float frequency = 0.009F;
     private float grooveFrequency = 0.1F;
     private boolean hasErrors = false;
@@ -58,6 +59,10 @@ public class Config {
 
     public int getScrollCoolDown() {
         return this.scrollCoolDown;
+    }
+
+    public int getGridOpacity() {
+        return this.gridOpacity;
     }
 
     public float getFrequency() {
@@ -109,6 +114,8 @@ public class Config {
             .ifPresent(i -> this.resolution = i);
         this.getInt(json, "scrollCoolDown", i -> i >= 0, "Must be >= 0")
             .ifPresent(i -> this.scrollCoolDown = i);
+        this.getInt(json, "gridOpacity", i -> i >= 0, "Must be >= 0")
+            .ifPresent(i -> this.gridOpacity = i);
         this.getFloat(json, "frequency", f -> f > 0, "Must be > 0")
             .ifPresent(f -> this.frequency = f);
         this.getFloat(json, "grooveFrequency", f -> f > 0, "Must be > 0")
@@ -162,6 +169,7 @@ public class Config {
             .add("maxY", this.maxY, "The maximum y-coordinate to generate.")
             .add("resolution", this.resolution, "The number of y-levels to render as the same color.")
             .add("scrollCoolDown", this.scrollCoolDown, "The scroll delay in ms.")
+            .add("gridOpacity", this.gridOpacity, "The opacity of the main grid lines over the map.")
             .add("frequency", this.frequency, "Noise frequency for the main noise map.")
             .add("grooveFrequency", this.grooveFrequency, "Frequency for the groove noise.");
     }
