@@ -11,6 +11,7 @@ public class HeightmapGenerator {
     private final Tracker tracker;
     private FastNoise generator;
     private float[][] prevMap;
+    private float prevScale;
 
     public HeightmapGenerator(final Config config, final Tracker tracker, final int seed) {
         this.config = config;
@@ -28,7 +29,9 @@ public class HeightmapGenerator {
     }
 
     public float sample(final int x, final int y) {
-        return this.generator.getNoiseScaled(x + this.tracker.getXOffset(), y + this.tracker.getYOffset());
+        final float n =
+            this.generator.getNoiseScaled(x + this.tracker.getXOffset(), y + this.tracker.getYOffset());
+        return n > 0 ? n * this.config.getSurfaceScale() : n;
     }
 
     public float[][] generate(final int h, final int w) {
@@ -36,13 +39,15 @@ public class HeightmapGenerator {
         if (this.prevMap == null
                 || this.prevMap.length != map.length
                 || this.prevMap[0].length != map[0].length
-                || this.tracker.getSeed() != this.tracker.getPrevSeed()) {
+                || this.tracker.getSeed() != this.tracker.getPrevSeed()
+                || this.prevScale != this.config.getSurfaceScale()) {
             this.writeNewMap(map);
         } else {
             this.writePartialMap(map);
         }
         this.tracker.reset();
         this.prevMap = map;
+        this.prevScale = this.config.getSurfaceScale();
         return map;
     }
 

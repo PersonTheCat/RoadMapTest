@@ -25,6 +25,7 @@ public class Config {
     private int gridOpacity = 14;
     private float frequency = 0.005F;
     private float grooveFrequency = 0.02F;
+    private float surfaceScale = 0.75F;
     private boolean hasErrors = false;
     private boolean missingFields = false;
 
@@ -71,6 +72,10 @@ public class Config {
 
     public float getGrooveFrequency() {
         return this.grooveFrequency;
+    }
+
+    public float getSurfaceScale() {
+        return this.surfaceScale;
     }
 
     public void reloadFromDisk() {
@@ -120,6 +125,8 @@ public class Config {
             .ifPresent(f -> this.frequency = f);
         this.getFloat(json, "grooveFrequency", f -> f > 0, "Must be > 0")
             .ifPresent(f -> this.grooveFrequency = f);
+        this.getFloat(json, "surfaceScale", f -> f >= 0 && f <= 1, "Must be 0 ~ 1")
+            .ifPresent(f -> this.surfaceScale = f);
     }
 
     private Optional<Integer> getInt(
@@ -171,7 +178,8 @@ public class Config {
             .add("scrollCoolDown", this.scrollCoolDown, "The scroll delay in ms.")
             .add("gridOpacity", this.gridOpacity, "The opacity of the main grid lines over the map.")
             .add("frequency", this.frequency, "Noise frequency for the main noise map.")
-            .add("grooveFrequency", this.grooveFrequency, "Frequency for the groove noise.");
+            .add("grooveFrequency", this.grooveFrequency, "Frequency for the groove noise.")
+            .add("surfaceScale", this.surfaceScale, "The terrain scale when above sea level.");
     }
 
     private void save(final JsonObject json) {
