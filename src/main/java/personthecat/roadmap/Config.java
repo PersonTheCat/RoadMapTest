@@ -17,14 +17,14 @@ public class Config {
     private final File file;
     private int chunkHeight = 32;
     private int chunkWidth = 40;
-    private int grooveSize = 32;
+    private int grooveSize = 64;
     private int minY = -48;
     private int maxY = 128;
     private int resolution = 12;
     private int scrollCoolDown = 3;
-    private int gridOpacity = 10;
-    private float frequency = 0.009F;
-    private float grooveFrequency = 0.1F;
+    private int gridOpacity = 14;
+    private float frequency = 0.005F;
+    private float grooveFrequency = 0.02F;
     private boolean hasErrors = false;
     private boolean missingFields = false;
 
