@@ -18,7 +18,7 @@ public class HeightmapGenerator {
     private int prevYOffset = 0;
     private int seed;
     private int prevSeed;
-    private BufferedImage prevImage;
+    private float[][] prevMap;
 
     public HeightmapGenerator(final Config config, final int seed) {
         this.config = config;
@@ -53,47 +53,55 @@ public class HeightmapGenerator {
     public BufferedImage generate() {
         final int w = this.config.getChunkWidth() << 4;
         final int h = this.config.getChunkHeight() << 4;
-        final BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-        if (this.prevImage == null
-                || this.prevImage.getWidth() != image.getWidth()
-                || this.prevImage.getHeight() != image.getHeight()
-                || this.seed != this.prevSeed ) {
-            this.writeNewImage(image);
+        final float[][] map = new float[w][h];
+        if (this.prevMap == null
+                || this.prevMap.length != map.length
+                || this.prevMap[0].length != map[0].length
+                || this.seed != this.prevSeed) {
+            this.writeNewMap(map);
         } else {
-            this.writePartialImage(image);
+            this.writePartialMap(map);
         }
         this.prevXOffset = this.xOffset;
         this.prevYOffset = this.yOffset;
         this.prevSeed = this.seed;
-        this.prevImage = image;
-        return image;
+        this.prevMap = map;
+        return this.colorize(map);
     }
 
-    private void writeNewImage(final BufferedImage image) {
-        for (int x = 0; x < image.getWidth(); x++) {
-            for (int y = 0; y < image.getHeight(); y++) {
-                final float n = this.generator.getNoiseScaled(x + this.xOffset, y + this.yOffset);
-                image.setRGB(x, y, this.getColor(x, y, n).getRGB());
+    private void writeNewMap(final float[][] map) {
+        for (int x = 0; x < map.length; x++) {
+            for (int y = 0; y < map[0].length; y++) {
+                map[x][y] = this.generator.getNoiseScaled(x + this.xOffset, y + this.yOffset);
             }
         }
     }
 
-    private void writePartialImage(final BufferedImage image) {
+    private void writePartialMap(final float[][] map) {
         final int xD = this.xOffset - this.prevXOffset;
         final int yD = this.yOffset - this.prevYOffset;
 
-        for (int x = 0; x < image.getWidth(); x++) {
+        for (int x = 0; x < map.length; x++) {
             final int xO = x + xD;
-            for (int y = 0; y < image.getHeight(); y++) {
+            for (int y = 0; y < map[0].length; y++) {
                 final int yO = y + yD;
-                if (xO >= 0 && xO < image.getWidth() && yO >= 0 && yO < image.getHeight()) {
-                    image.setRGB(x, y, this.prevImage.getRGB(xO, yO));
+                if (xO >= 0 && xO < map.length && yO >= 0 && yO < map[0].length) {
+                    map[x][y] = this.prevMap[xO][yO];
                 } else {
-                    final float n = this.generator.getNoiseScaled(x + this.xOffset, y + this.yOffset);
-                    image.setRGB(x, y, this.getColor(x, y, n).getRGB());
+                    map[x][y] = this.generator.getNoiseScaled(x + this.xOffset, y + this.yOffset);
                 }
             }
         }
+    }
+
+    private BufferedImage colorize(final float[][] map) {
+        final BufferedImage image = new BufferedImage(map.length, map[0].length, BufferedImage.TYPE_INT_ARGB);
+        for (int x = 0; x < map.length; x++) {
+            for (int y = 0; y < map[0].length; y++) {
+                image.setRGB(x, y, this.getColor(x, y, map[x][y]).getRGB());
+            }
+        }
+        return image;
     }
 
     private Color getColor(final int x, final int y, final float n) {
