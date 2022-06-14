@@ -44,6 +44,7 @@ public class AppWindow {
 
     private static JFrame createWindow(final JLabel label) {
         final var window = new JFrame();
+        window.setTitle("Road Map Test");
         window.add(label);
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.pack();
