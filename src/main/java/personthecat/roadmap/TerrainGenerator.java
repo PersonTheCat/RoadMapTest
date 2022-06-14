@@ -2,6 +2,7 @@ package personthecat.roadmap;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.Random;
 
 public class TerrainGenerator {
 
@@ -9,16 +10,19 @@ public class TerrainGenerator {
     private final RoadMapGenerator roadGenerator;
     private final Config config;
     private final Tracker tracker;
+    private final Random rand;
 
     public TerrainGenerator(final Config config, final int seed) {
         this.tracker = new Tracker();
         this.mapGenerator = new HeightmapGenerator(config, this.tracker, seed);
         this.roadGenerator = new RoadMapGenerator(config, this.tracker, this.mapGenerator);
         this.config = config;
+        this.rand = new Random(seed);
     }
 
     public void next(final int seed) {
         this.mapGenerator.next(seed);
+        this.rand.setSeed(seed);
     }
 
     public void reload() {
@@ -46,7 +50,7 @@ public class TerrainGenerator {
         final int h = this.config.getChunkHeight() << 4;
         final float[][] map = this.mapGenerator.generate(h, w);
         final BufferedImage image = this.colorize(map);
-        this.roadGenerator.placeRoads(image);
+        this.roadGenerator.placeRoads(image, this.rand);
         this.drawGridLines(image);
         return image;
     }
@@ -55,13 +59,13 @@ public class TerrainGenerator {
         final BufferedImage image = new BufferedImage(map.length, map[0].length, BufferedImage.TYPE_INT_ARGB);
         for (int x = 0; x < map.length; x++) {
             for (int y = 0; y < map[0].length; y++) {
-                image.setRGB(x, y, this.getColor(x, y, map[x][y]).getRGB());
+                image.setRGB(x, y, this.getColor(map[x][y]).getRGB());
             }
         }
         return image;
     }
 
-    private Color getColor(final int x, final int y, final float n) {
+    private Color getColor(final float n) {
         if (n >= 0) {
             final int green = 75 + (int) n;
             final int step = green % this.config.getResolution();
