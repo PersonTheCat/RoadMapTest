@@ -18,7 +18,7 @@ public class Main {
     private static class RoadMapTest {
         final Config config = new Config(new File("config.xjs"));
         final Random rand = new Random();
-        final HeightmapGenerator generator = new HeightmapGenerator(this.config, this.rand.nextInt());
+        final TerrainGenerator generator = new TerrainGenerator(this.config, this.rand.nextInt());
         AppWindow window;
 
         void run() {
