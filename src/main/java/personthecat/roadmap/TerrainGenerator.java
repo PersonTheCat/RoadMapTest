@@ -45,10 +45,10 @@ public class TerrainGenerator {
         this.tracker.right(count);
     }
 
-    public BufferedImage generate() {
+    public BufferedImage generate(boolean reload) {
         final int w = this.config.getChunkWidth() << 4;
         final int h = this.config.getChunkHeight() << 4;
-        final float[][] map = this.mapGenerator.generate(h, w);
+        final float[][] map = this.mapGenerator.generate(h, w, reload);
         final BufferedImage image = this.colorize(map);
         this.roadGenerator.placeRoads(image, this.rand);
         this.drawGridLines(image);

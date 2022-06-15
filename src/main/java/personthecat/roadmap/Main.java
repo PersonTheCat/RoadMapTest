@@ -61,7 +61,7 @@ public class Main {
             if (newSeed) {
                 this.generator.next(this.rand.nextInt());
             }
-            return this.generator.generate();
+            return this.generator.generate(reload);
         }
     }
 }

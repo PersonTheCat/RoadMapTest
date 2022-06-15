@@ -34,13 +34,9 @@ public class HeightmapGenerator {
         return n > 0 ? n * this.config.getSurfaceScale() : n;
     }
 
-    public float[][] generate(final int h, final int w) {
+    public float[][] generate(final int h, final int w, final boolean reload) {
         final float[][] map = new float[w][h];
-        if (this.prevMap == null
-                || this.prevMap.length != map.length
-                || this.prevMap[0].length != map[0].length
-                || this.tracker.getSeed() != this.tracker.getPrevSeed()
-                || this.prevScale != this.config.getSurfaceScale()) {
+        if (this.prevMap == null || reload) {
             this.writeNewMap(map);
         } else {
             this.writePartialMap(map);
