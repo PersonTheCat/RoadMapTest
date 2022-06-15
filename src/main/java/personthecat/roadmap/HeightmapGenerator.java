@@ -11,7 +11,6 @@ public class HeightmapGenerator {
     private final Tracker tracker;
     private FastNoise generator;
     private float[][] prevMap;
-    private float prevScale;
 
     public HeightmapGenerator(final Config config, final Tracker tracker, final int seed) {
         this.config = config;
@@ -43,7 +42,6 @@ public class HeightmapGenerator {
         }
         this.tracker.reset();
         this.prevMap = map;
-        this.prevScale = this.config.getSurfaceScale();
         return map;
     }
 
