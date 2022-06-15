@@ -71,7 +71,7 @@ public class TerrainGenerator {
             final int step = green % this.config.getResolution();
             return new Color(0, this.cap(green - step), 0);
         }
-        return new Color(0, 0, 100 + (int) n);
+        return new Color(0, 0, this.cap(100 + (int) n));
     }
 
     private void drawGridLines(final BufferedImage image) {

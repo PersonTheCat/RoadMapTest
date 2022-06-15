@@ -76,7 +76,6 @@ public class HeightmapGenerator {
         }
     }
 
-
     private FastNoise createGenerator() {
         return new NoiseDescriptor()
             .noise(NoiseType.MULTI)
