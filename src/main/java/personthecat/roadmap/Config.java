@@ -26,6 +26,7 @@ public class Config {
     private float frequency = 0.005F;
     private float grooveFrequency = 0.02F;
     private float surfaceScale = 0.75F;
+    private boolean mountains = false;
     private boolean hasErrors = false;
     private boolean missingFields = false;
 
@@ -78,6 +79,10 @@ public class Config {
         return this.surfaceScale;
     }
 
+    public boolean isMountains() {
+        return this.mountains;
+    }
+
     public void reloadFromDisk() {
         try {
             if (!this.file.exists()) {
@@ -127,6 +132,8 @@ public class Config {
             .ifPresent(f -> this.grooveFrequency = f);
         this.getFloat(json, "surfaceScale", f -> f >= 0 && f <= 1, "Must be 0 ~ 1")
             .ifPresent(f -> this.surfaceScale = f);
+        this.get(json, "mountains", this.wrap(JsonValue::asBoolean, x -> true, "Unexpected error"))
+            .ifPresent(b -> this.mountains = b);
     }
 
     private Optional<Integer> getInt(
@@ -179,7 +186,8 @@ public class Config {
             .add("gridOpacity", this.gridOpacity, "The opacity of the main grid lines over the map.")
             .add("frequency", this.frequency, "Noise frequency for the main noise map.")
             .add("grooveFrequency", this.grooveFrequency, "Frequency for the groove noise.")
-            .add("surfaceScale", this.surfaceScale, "The terrain scale when above sea level.");
+            .add("surfaceScale", this.surfaceScale, "The terrain scale when above sea level.")
+            .add("mountains", this.mountains, "Whether to enable mountainous terrain scaling.");
     }
 
     private void save(final JsonObject json) {

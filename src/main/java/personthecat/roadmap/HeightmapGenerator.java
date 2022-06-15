@@ -71,10 +71,13 @@ public class HeightmapGenerator {
     }
 
     private FastNoise createGenerator() {
-        return new NoiseDescriptor()
+        final NoiseDescriptor cfg = new NoiseDescriptor()
             .noise(NoiseType.MULTI)
-            .noiseLookup(this.primaryMap(), this.grooves())
-            .generate();
+            .noiseLookup(this.primaryMap(), this.grooves());
+        if (this.config.isMountains()) {
+            return cfg.scalar(HeightmapGenerator::scaleMountains).generate();
+        }
+        return cfg.generate();
     }
 
     private NoiseDescriptor primaryMap() {
@@ -92,5 +95,12 @@ public class HeightmapGenerator {
             .frequency(this.config.getGrooveFrequency())
             .fractal(FractalType.FBM)
             .seed(this.tracker.getSeed());
+    }
+
+    private static float scaleMountains(final float y) {
+        if (y <= 0) {
+            return y;
+        }
+        return (float) (((0.000000002 * Math.pow(y, 6)) / 2) + (13 * Math.sqrt(y)));
     }
 }

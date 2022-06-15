@@ -69,7 +69,15 @@ public class TerrainGenerator {
         if (n >= 0) {
             final int green = 75 + (int) n;
             final int step = green % this.config.getResolution();
-            return new Color(0, this.cap(green - step), 0);
+            final int capped = this.cap(green - step);
+            if (capped > 175) {
+                final int rb = (int) ((double) (175 + (((int) n - 175) / 4)) * 0.75);
+                final int rbStep = rb % this.config.getResolution();
+                final int rbCapped = this.cap(rb - rbStep);
+                final int gCapped = this.cap(rb - rbStep + 25);
+                return new Color(rbCapped, gCapped, rbCapped);
+            }
+            return new Color(0, capped, 0);
         }
         return new Color(0, 0, this.cap(100 + (int) n));
     }

@@ -15,7 +15,7 @@ repositories {
 }
 
 dependencies {
-    implementation group: 'com.github.PersonTheCat', name: 'FastNoise', version: '0.8'
+    implementation group: 'com.github.PersonTheCat', name: 'FastNoise', version: '0.9'
     implementation group: 'com.github.Exjson', name: 'xjs-core', version: '0.17'
     implementation group: 'it.unimi.dsi', name: 'fastutil', version: '8.2.1'
     compileOnly group: 'org.jetbrains', name: 'annotations', version: '16.0.2'
