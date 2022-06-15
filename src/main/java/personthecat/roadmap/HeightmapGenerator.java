@@ -101,6 +101,6 @@ public class HeightmapGenerator {
         if (y <= 0) {
             return y;
         }
-        return (float) (((0.000000002 * Math.pow(y, 6)) / 2) + (13 * Math.sqrt(y)));
+        return (float) (((0.000000002 * Math.pow(y, 6)) / 2) + (11 * Math.sqrt(y)));
     }
 }
