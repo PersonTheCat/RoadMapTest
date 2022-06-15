@@ -27,6 +27,11 @@ public class Main {
             window.onKeyPressed('r', w -> w.render(this.createNextImage(true, false)));
             window.onKeyPressed(KeyEvent.VK_ESCAPE, AppWindow::close);
 
+            window.onKeyPressed('m', w -> {
+                this.config.toggleMountains();
+                w.render(this.createNextImage(true, false));
+            });
+
             window.onKeyPressed(KeyEvent.VK_UP, (w, e) -> {
                 this.generator.up(e.isShiftDown() ? 3 : 1);
                 w.render(this.createNextImage(false, false));

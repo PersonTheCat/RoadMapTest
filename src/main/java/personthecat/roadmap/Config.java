@@ -170,6 +170,11 @@ public class Config {
         };
     }
 
+    public void toggleMountains() {
+        this.mountains = !this.mountains;
+        this.save();
+    }
+
     public void save() {
         this.save(this.toJson());
     }
