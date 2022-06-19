@@ -6,14 +6,16 @@ import java.util.Random;
 
 public class TerrainGenerator {
 
+    private static final int SIDE_VIEW_HALF = 512;
+
     private final HeightmapGenerator mapGenerator;
     private final RoadMapGenerator roadGenerator;
     private final Config config;
     private final Tracker tracker;
     private final Random rand;
 
-    public TerrainGenerator(final Config config, final int seed) {
-        this.tracker = new Tracker();
+    public TerrainGenerator(final Tracker tracker, final Config config, final int seed) {
+        this.tracker = tracker;
         this.mapGenerator = new HeightmapGenerator(config, this.tracker, seed);
         this.roadGenerator = new RoadMapGenerator(config, this.tracker, this.mapGenerator);
         this.config = config;
@@ -49,6 +51,39 @@ public class TerrainGenerator {
         final int w = this.config.getChunkWidth() << 4;
         final int h = this.config.getChunkHeight() << 4;
         final float[][] map = this.mapGenerator.generate(h, w, reload);
+        if (this.tracker.isSideView()) {
+            return this.drawSideView(map);
+        }
+        return this.drawMap(map);
+    }
+
+    private BufferedImage drawSideView(final float[][] map) {
+        final BufferedImage image = new BufferedImage(map.length, map[0].length, BufferedImage.TYPE_INT_ARGB);
+        final int cY = map.length / 2;
+        int o = 0;
+        for (int y = cY + SIDE_VIEW_HALF - 1; y >= cY - SIDE_VIEW_HALF; y--) {
+            this.drawSlice(image, map, y, o++);
+
+        }
+        return image;
+    }
+
+    private void drawSlice(final BufferedImage image, final float[][] map, final int y, final int o) {
+        for (int x = 0; x < map.length; x++) {
+            final int n = (int) map[x][y];
+            final int a = n + (int) ((double) o * this.config.getSideViewAngle());
+            final Color base = this.getColor(n);
+            final int c = this.darken(base.getRGB(), o / 32);
+            for (int h = Math.min(a, map.length - 1); h >= 0; h--) {
+                if (image.getRGB(x, map.length - h - 1) != 0) {
+                    break;
+                }
+                image.setRGB(x, map.length - h - 1, c);
+            }
+        }
+    }
+
+    private BufferedImage drawMap(final float[][] map) {
         final BufferedImage image = this.colorize(map);
         this.roadGenerator.placeRoads(image, this.rand);
         this.drawGridLines(image);

@@ -26,6 +26,7 @@ public class Config {
     private float frequency = 0.0025F;
     private float grooveFrequency = 0.02F;
     private float surfaceScale = 0.75F;
+    private float sideViewAngle = 0.8F;
     private boolean mountains = true;
     private boolean hasErrors = false;
     private boolean missingFields = false;
@@ -79,6 +80,10 @@ public class Config {
         return this.surfaceScale;
     }
 
+    public float getSideViewAngle() {
+        return this.sideViewAngle;
+    }
+
     public boolean isMountains() {
         return this.mountains;
     }
@@ -110,9 +115,9 @@ public class Config {
     }
 
     private void deserialize(final JsonObject json) {
-        this.getInt(json, "chunkHeight", i -> i > 0 && i <= 64, "Must be 1 ~ 64")
+        this.getInt(json, "chunkHeight", i -> i > 8 && i <= 64, "Must be 8 ~ 64")
             .ifPresent(i -> this.chunkHeight = i);
-        this.getInt(json,"chunkWidth", i -> i > 0 && i <= 64, "Must be 1 ~ 64")
+        this.getInt(json,"chunkWidth", i -> i > 8 && i <= 64, "Must be 8 ~ 64")
             .ifPresent(i -> this.chunkWidth = i);
         this.getInt(json, "grooveSize", i -> i >= 0 && i <= 128, "Must be 0 ~ 128")
             .ifPresent(i -> this.grooveSize = i);
@@ -132,6 +137,8 @@ public class Config {
             .ifPresent(f -> this.grooveFrequency = f);
         this.getFloat(json, "surfaceScale", f -> f >= 0 && f <= 1, "Must be 0 ~ 1")
             .ifPresent(f -> this.surfaceScale = f);
+        this.getFloat(json, "sideViewAngle", f -> f >= 0, "Must be > 0")
+            .ifPresent(f -> this.sideViewAngle = f);
         this.get(json, "mountains", this.wrap(JsonValue::asBoolean, x -> true, "Unexpected error"))
             .ifPresent(b -> this.mountains = b);
     }
@@ -192,6 +199,7 @@ public class Config {
             .add("frequency", this.frequency, "Noise frequency for the main noise map.")
             .add("grooveFrequency", this.grooveFrequency, "Frequency for the groove noise.")
             .add("surfaceScale", this.surfaceScale, "The terrain scale when above sea level.")
+            .add("sideViewAngle", this.sideViewAngle, "The ratio at which to drop closer pixels.")
             .add("mountains", this.mountains, "Whether to enable mountainous terrain scaling.");
     }
 

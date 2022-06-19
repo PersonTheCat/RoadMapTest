@@ -13,6 +13,7 @@ will regenerate.
 | esc    | Exit the application                   |
 | r      | Reload the config and update the image |
 | m      | Toggle mountains on and off            |
+| s      | Toggle side view mode                  |
 | up     | Move the image up by one chunk         |
 | down   | Move the image down by one chunk       |
 | left   | Move the image left by one chunk       |

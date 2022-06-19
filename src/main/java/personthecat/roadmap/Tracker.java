@@ -7,7 +7,7 @@ public class Tracker {
     private int prevXOffset = 0;
     private int prevYOffset = 0;
     private int seed = 0;
-    private int prevSeed = 0;
+    private boolean sideView = false;
 
     public void up(final int count) {
         this.yOffset -= 32 * count;
@@ -49,13 +49,16 @@ public class Tracker {
         this.seed = seed;
     }
 
-    public int getPrevSeed() {
-        return this.prevSeed;
+    public boolean isSideView() {
+        return this.sideView;
+    }
+
+    public void toggleSideView() {
+        this.sideView = !this.sideView;
     }
 
     public void reset() {
         this.prevXOffset = this.xOffset;
         this.prevYOffset = this.yOffset;
-        this.prevSeed = this.seed;
     }
 }

@@ -17,8 +17,9 @@ public class Main {
 
     private static class RoadMapTest {
         final Config config = new Config(new File("config.xjs"));
+        final Tracker tracker = new Tracker();
         final Random rand = new Random();
-        final TerrainGenerator generator = new TerrainGenerator(this.config, this.rand.nextInt());
+        final TerrainGenerator generator = new TerrainGenerator(this.tracker, this.config, this.rand.nextInt());
         AppWindow window;
 
         void run() {
@@ -31,7 +32,11 @@ public class Main {
                 this.config.toggleMountains();
                 w.render(this.createNextImage(true, false));
             });
-
+            window.onKeyPressed('s', w -> {
+                this.tracker.toggleSideView();
+                w.render(this.createNextImage(true, false));
+                w.pack();
+            });
             window.onKeyPressed(KeyEvent.VK_UP, (w, e) -> {
                 this.generator.up(e.isShiftDown() ? 3 : 1);
                 w.render(this.createNextImage(false, false));
