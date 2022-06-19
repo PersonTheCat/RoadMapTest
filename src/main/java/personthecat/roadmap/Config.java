@@ -15,10 +15,10 @@ import java.util.function.Predicate;
 public class Config {
 
     private final File file;
-    private int chunkHeight = 48;
-    private int chunkWidth = 48;
-    private int grooveSize = 64;
-    private int minY = -128;
+    private int chunkHeight = 64;
+    private int chunkWidth = 64;
+    private int grooveSize = 20;
+    private int minY = -100;
     private int maxY = 96;
     private int resolution = 12;
     private int scrollCoolDown = 3;
