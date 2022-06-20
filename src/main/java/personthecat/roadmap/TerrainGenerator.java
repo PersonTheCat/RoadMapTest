@@ -59,11 +59,10 @@ public class TerrainGenerator {
 
     private BufferedImage drawSideView(final float[][] map) {
         final BufferedImage image = new BufferedImage(map.length, map[0].length, BufferedImage.TYPE_INT_ARGB);
-        final int cY = map.length / 2;
+        final int cY = map[0].length / 2;
         int o = 0;
         for (int y = cY + SIDE_VIEW_HALF - 1; y >= cY - SIDE_VIEW_HALF; y--) {
             this.drawSlice(image, map, y, o++);
-
         }
         return image;
     }
@@ -74,11 +73,11 @@ public class TerrainGenerator {
             final int a = n + (int) ((double) o * this.config.getSideViewAngle());
             final Color base = this.getColor(n);
             final int c = this.darken(base.getRGB(), o / 32);
-            for (int h = Math.min(a, map.length - 1); h >= 0; h--) {
-                if (image.getRGB(x, map.length - h - 1) != 0) {
+            for (int h = Math.min(a, map[0].length - 1); h >= 0; h--) {
+                if (image.getRGB(x, map[0].length - h - 1) != 0) {
                     break;
                 }
-                image.setRGB(x, map.length - h - 1, c);
+                image.setRGB(x, map[0].length - h - 1, c);
             }
         }
     }
@@ -119,7 +118,7 @@ public class TerrainGenerator {
 
     private void drawGridLines(final BufferedImage image) {
         for (int x = 0; x < image.getWidth(); x++) {
-            for (int y = 0; y < image.getWidth(); y++) {
+            for (int y = 0; y < image.getHeight(); y++) {
                 if (x % 32 == 0 || y % 32 == 0) {
                     image.setRGB(x, y, this.darken(image.getRGB(x, y), this.config.getGridOpacity()));
                 } else if (x % 16 == 0 || y % 16 == 0) {

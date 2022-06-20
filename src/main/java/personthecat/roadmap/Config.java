@@ -25,7 +25,7 @@ public class Config {
     private int gridOpacity = 14;
     private float frequency = 0.0025F;
     private float grooveFrequency = 0.02F;
-    private float surfaceScale = 0.75F;
+    private float surfaceScale = 0.6F;
     private float sideViewAngle = 0.8F;
     private boolean mountains = true;
     private boolean hasErrors = false;
@@ -117,7 +117,7 @@ public class Config {
     private void deserialize(final JsonObject json) {
         this.getInt(json, "chunkHeight", i -> i > 8 && i <= 64, "Must be 8 ~ 64")
             .ifPresent(i -> this.chunkHeight = i);
-        this.getInt(json,"chunkWidth", i -> i > 8 && i <= 64, "Must be 8 ~ 64")
+        this.getInt(json,"chunkWidth", i -> i > 8 && i <= 96, "Must be 8 ~ 96")
             .ifPresent(i -> this.chunkWidth = i);
         this.getInt(json, "grooveSize", i -> i >= 0 && i <= 128, "Must be 0 ~ 128")
             .ifPresent(i -> this.grooveSize = i);
