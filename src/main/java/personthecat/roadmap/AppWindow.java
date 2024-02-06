@@ -3,24 +3,35 @@ package personthecat.roadmap;
 import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-public class AppWindow {
+public class AppWindow extends WindowAdapter {
     private final JLabel label;
     private final JFrame window;
     private final Config config;
+    private final Tracker tracker;
 
-    public AppWindow(final Config config, final BufferedImage image) {
+    public AppWindow(final Config config, final Tracker tracker, final BufferedImage image) {
         this.label = new JLabel();
         this.render(image);
         this.window = createWindow(this.label);
         this.config = config;
+        this.tracker = tracker;
+        this.window.addWindowListener(this);
     }
 
     public void onKeyPressed(final int key, final Consumer<AppWindow> event) {
         this.onKeyPressed(key, (w, e) -> event.accept(w));
+    }
+
+    public void onKeyPressed(final int[] anyKey, final Consumer<AppWindow> event) {
+        for (final int key : anyKey) {
+            this.onKeyPressed(key, event);
+        }
     }
 
     public void onKeyPressed(final int key, final BiConsumer<AppWindow, KeyEvent> event) {
@@ -37,7 +48,13 @@ public class AppWindow {
         this.window.setSize(width, height);
     }
 
+    @Override
+    public void windowClosing(final WindowEvent e) {
+        this.close();
+    }
+
     public void close() {
+        this.config.saveIfUpdated(this.tracker);
         this.window.dispose();
         System.exit(0);
     }

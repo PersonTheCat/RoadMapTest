@@ -31,6 +31,7 @@ public class Config {
     private float surfaceScale = 0.6F;
     private float sideViewAngle = 0.8F;
     private float sideViewZoom = 1.25F;
+    private boolean sideView = false;
     private boolean mountains = true;
     private NoiseType mapType = NoiseType.SIMPLEX;
     private NoiseType grooveType = NoiseType.PERLIN;
@@ -93,6 +94,10 @@ public class Config {
 
     public float getSideViewZoom() {
         return this.sideViewZoom;
+    }
+
+    public boolean isSideView() {
+        return this.sideView;
     }
 
     public boolean isMountains() {
@@ -164,8 +169,8 @@ public class Config {
             .ifPresent(f -> this.sideViewAngle = f);
         this.getFloat(json, "sideViewZoom", f -> f >= 0, "Must be > 0")
             .ifPresent(f -> this.sideViewZoom = f);
-        this.get(json, "mountains", this.wrap(JsonValue::asBoolean, x -> true, "Unexpected error"))
-            .ifPresent(b -> this.mountains = b);
+        this.getBoolean(json, "mountains").ifPresent(b -> this.mountains = b);
+        this.getBoolean(json, "sideView").ifPresent(b -> this.sideView = b);
         this.getEnum(json, "mapType", NoiseType.class, NoiseType::from)
             .ifPresent(e -> this.mapType = e);
         this.getEnum(json, "grooveType", NoiseType.class, NoiseType::from)
@@ -182,6 +187,10 @@ public class Config {
     private Optional<Float> getFloat(
             final JsonObject json, final String key, final Predicate<Float> filter, final String ifError) {
         return this.get(json, key, this.wrap(JsonValue::asFloat, filter, ifError));
+    }
+
+    private Optional<Boolean> getBoolean(final JsonObject json, final String key) {
+        return this.get(json, key, this.wrap(JsonValue::asBoolean, b -> true, "Unexpected error"));
     }
 
     private <E extends Enum<E>> Optional<E> getEnum(
@@ -225,6 +234,15 @@ public class Config {
         this.save();
     }
 
+    public void saveIfUpdated(final Tracker tracker) {
+        if (this.sideView != tracker.isSideView()
+                || this.sideViewZoom != tracker.getSideViewZoom()) {
+            this.sideView = tracker.isSideView();
+            this.sideViewZoom = tracker.getSideViewZoom();
+            this.save();
+        }
+    }
+
     public void save() {
         this.save(this.toJson());
     }
@@ -245,6 +263,7 @@ public class Config {
             .add("sideViewAngle", this.sideViewAngle, "The ratio at which to drop closer pixels.")
             .add("sideViewZoom", this.sideViewZoom, "The zoom ratio in side view mode, e.g. > 1 to zoom in, < 1 to zoom out.")
             .add("mountains", this.mountains, "Whether to enable mountainous terrain scaling.")
+            .add("sideView", this.sideView, "Whether to display the terrain in side view mode.")
             .add("mapType", this.mapType.format(), "The type of noise to generate for the primary map.")
             .add("grooveType", this.grooveType.format(), "The type of noise to generate for the grooves.")
             .add("sideViewBackground", BackgroundColor.format(this.sideViewBackground), "The color to display as the background in side view mode");

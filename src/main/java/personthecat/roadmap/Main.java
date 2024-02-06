@@ -18,13 +18,13 @@ public class Main {
 
     private static class RoadMapTest {
         final Config config = new Config(new File("config.xjs"));
-        final Tracker tracker = new Tracker();
+        final Tracker tracker = new Tracker(this.config);
         final Random rand = new Random();
         final TerrainGenerator generator = new TerrainGenerator(this.tracker, this.config, this.rand.nextInt());
         AppWindow window;
 
         void run() {
-            final var window = new AppWindow(this.config, this.createNextImage(false, false));
+            final var window = new AppWindow(this.config, this.tracker, this.createNextImage(false, false));
             window.onKeyPressed(KeyEvent.VK_SPACE, w -> w.render(this.createNextImage(false, true)));
             window.onKeyPressed('r', w -> w.render(this.createNextImage(true, false)));
             window.onKeyPressed(KeyEvent.VK_ESCAPE, AppWindow::close);
@@ -37,6 +37,14 @@ public class Main {
                 this.tracker.toggleSideView();
                 w.render(this.createNextImage(true, false));
                 w.pack();
+            });
+            window.onKeyPressed(new int[] { KeyEvent.VK_EQUALS, KeyEvent.VK_PLUS }, w -> {
+                this.tracker.zoomIn();
+                w.render(this.createNextImage(true, false));
+            });
+            window.onKeyPressed(KeyEvent.VK_MINUS, w -> {
+                this.tracker.zoomOut();
+                w.render(this.createNextImage(true, false));
             });
             window.onKeyPressed(KeyEvent.VK_UP, (w, e) -> {
                 this.generator.up(e.isShiftDown() ? 3 : 1);

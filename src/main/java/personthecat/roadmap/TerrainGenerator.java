@@ -100,7 +100,7 @@ public class TerrainGenerator {
     }
     
     private BufferedImage zoom(final BufferedImage image) {
-        final float zoom = this.config.getSideViewZoom();
+        final float zoom = this.tracker.getSideViewZoom();
         final BufferedImage zoomed = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
         final Graphics2D g2d = zoomed.createGraphics();
         this.drawBackground(zoomed);
