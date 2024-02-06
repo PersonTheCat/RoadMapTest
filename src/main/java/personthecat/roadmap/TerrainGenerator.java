@@ -7,6 +7,7 @@ import java.util.Random;
 public class TerrainGenerator {
 
     private static final int SIDE_VIEW_HALF = 512;
+    private static final int MIN_COLOR_VALUE = 1;
 
     private final HeightmapGenerator mapGenerator;
     private final RoadMapGenerator roadGenerator;
@@ -64,6 +65,7 @@ public class TerrainGenerator {
         for (int y = cY + SIDE_VIEW_HALF - 1; y >= cY - SIDE_VIEW_HALF; y--) {
             this.drawSlice(image, map, y, o++);
         }
+        this.drawBackground(image);
         return image;
     }
 
@@ -78,6 +80,18 @@ public class TerrainGenerator {
                     break;
                 }
                 image.setRGB(x, map[0].length - h - 1, c);
+            }
+        }
+    }
+
+    private void drawBackground(final BufferedImage image) {
+        final int bg = this.config.getSideViewBackground().getRGB();
+        for (int x = 0; x < image.getWidth(); x++) {
+            for (int y = 0; y < image.getHeight(); y++) {
+                if (image.getRGB(x, y) != 0) {
+                    break;
+                }
+                image.setRGB(x, y, bg);
             }
         }
     }
@@ -131,9 +145,9 @@ public class TerrainGenerator {
 
     private int darken(final int rgb, final int amount) {
         final Color color = new Color(rgb);
-        return new Color(Math.max(color.getRed() - amount, 0),
-            Math.max(color.getGreen() - amount, 0),
-            Math.max(color.getBlue() - amount, 0),
+        return new Color(Math.max(color.getRed() - amount, MIN_COLOR_VALUE),
+            Math.max(color.getGreen() - amount, MIN_COLOR_VALUE),
+            Math.max(color.getBlue() - amount, MIN_COLOR_VALUE),
             color.getAlpha()).getRGB();
     }
 

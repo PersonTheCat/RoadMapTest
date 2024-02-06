@@ -7,6 +7,7 @@ import xjs.core.JsonObject;
 import xjs.core.JsonValue;
 import xjs.exception.SyntaxException;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -29,6 +30,7 @@ public class Config {
     private float grooveFrequency = 0.02F;
     private float surfaceScale = 0.6F;
     private float sideViewAngle = 0.8F;
+    private Color sideViewBackground = Color.BLACK;
     private boolean mountains = true;
     private NoiseType mapType = NoiseType.SIMPLEX;
     private NoiseType grooveType = NoiseType.PERLIN;
@@ -86,6 +88,10 @@ public class Config {
 
     public float getSideViewAngle() {
         return this.sideViewAngle;
+    }
+
+    public Color getSideViewBackground() {
+        return this.sideViewBackground;
     }
 
     public boolean isMountains() {
@@ -151,6 +157,8 @@ public class Config {
             .ifPresent(f -> this.surfaceScale = f);
         this.getFloat(json, "sideViewAngle", f -> f >= 0, "Must be > 0")
             .ifPresent(f -> this.sideViewAngle = f);
+        this.getEnum(json, "sideViewBackground", BackgroundColor.class, BackgroundColor::from)
+            .ifPresent(c -> this.sideViewBackground = c.get());
         this.get(json, "mountains", this.wrap(JsonValue::asBoolean, x -> true, "Unexpected error"))
             .ifPresent(b -> this.mountains = b);
         this.getEnum(json, "mapType", NoiseType.class, NoiseType::from)
@@ -228,6 +236,7 @@ public class Config {
             .add("grooveFrequency", this.grooveFrequency, "Frequency for the groove noise.")
             .add("surfaceScale", this.surfaceScale, "The terrain scale when above sea level.")
             .add("sideViewAngle", this.sideViewAngle, "The ratio at which to drop closer pixels.")
+            .add("sideViewBackground", BackgroundColor.format(this.sideViewBackground), "The color to display as the background in side view mode")
             .add("mountains", this.mountains, "Whether to enable mountainous terrain scaling.")
             .add("mapType", this.mapType.format(), "The type of noise to generate for the primary map.")
             .add("grooveType", this.grooveType.format(), "The type of noise to generate for the grooves.");
