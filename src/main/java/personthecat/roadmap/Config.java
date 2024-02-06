@@ -1,6 +1,7 @@
 package personthecat.roadmap;
 
-import xjs.core.CommentType;
+import personthecat.fastnoise.data.NoiseType;
+import xjs.comments.CommentType;
 import xjs.core.Json;
 import xjs.core.JsonObject;
 import xjs.core.JsonValue;
@@ -8,6 +9,7 @@ import xjs.exception.SyntaxException;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -28,6 +30,8 @@ public class Config {
     private float surfaceScale = 0.6F;
     private float sideViewAngle = 0.8F;
     private boolean mountains = true;
+    private NoiseType mapType = NoiseType.SIMPLEX;
+    private NoiseType grooveType = NoiseType.PERLIN;
     private boolean hasErrors = false;
     private boolean missingFields = false;
 
@@ -88,6 +92,14 @@ public class Config {
         return this.mountains;
     }
 
+    public NoiseType getMapType() {
+        return this.mapType;
+    }
+
+    public NoiseType getGrooveType() {
+        return this.grooveType;
+    }
+
     public void reloadFromDisk() {
         try {
             if (!this.file.exists()) {
@@ -141,6 +153,10 @@ public class Config {
             .ifPresent(f -> this.sideViewAngle = f);
         this.get(json, "mountains", this.wrap(JsonValue::asBoolean, x -> true, "Unexpected error"))
             .ifPresent(b -> this.mountains = b);
+        this.getEnum(json, "mapType", NoiseType.class, NoiseType::from)
+            .ifPresent(e -> this.mapType = e);
+        this.getEnum(json, "grooveType", NoiseType.class, NoiseType::from)
+            .ifPresent(e -> this.grooveType = e);
     }
 
     private Optional<Integer> getInt(
@@ -151,6 +167,18 @@ public class Config {
     private Optional<Float> getFloat(
             final JsonObject json, final String key, final Predicate<Float> filter, final String ifError) {
         return this.get(json, key, this.wrap(JsonValue::asFloat, filter, ifError));
+    }
+
+    private <E extends Enum<E>> Optional<E> getEnum(
+            final JsonObject json, final String key, final Class<E> type, final Function<String, E> mapper) {
+        return this.get(json, key, v -> {
+            final String name = v.intoString();
+            final E result = mapper.apply(name);
+            if (result == null) {
+                v.setComment(CommentType.EOL, "Must be one of " + Arrays.toString(type.getEnumConstants()));
+            }
+            return result;
+        });
     }
 
     private <T> Optional<T> get(final JsonObject json, final String key, final Function<JsonValue, T> wrappedGetter) {
@@ -200,7 +228,9 @@ public class Config {
             .add("grooveFrequency", this.grooveFrequency, "Frequency for the groove noise.")
             .add("surfaceScale", this.surfaceScale, "The terrain scale when above sea level.")
             .add("sideViewAngle", this.sideViewAngle, "The ratio at which to drop closer pixels.")
-            .add("mountains", this.mountains, "Whether to enable mountainous terrain scaling.");
+            .add("mountains", this.mountains, "Whether to enable mountainous terrain scaling.")
+            .add("mapType", this.mapType.format(), "The type of noise to generate for the primary map.")
+            .add("grooveType", this.grooveType.format(), "The type of noise to generate for the grooves.");
     }
 
     private void save(final JsonObject json) {

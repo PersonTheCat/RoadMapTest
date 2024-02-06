@@ -1,9 +1,7 @@
 package personthecat.roadmap;
 
 import personthecat.fastnoise.FastNoise;
-import personthecat.fastnoise.data.FractalType;
-import personthecat.fastnoise.data.NoiseDescriptor;
-import personthecat.fastnoise.data.NoiseType;
+import personthecat.fastnoise.data.*;
 
 public class HeightmapGenerator {
 
@@ -82,7 +80,7 @@ public class HeightmapGenerator {
 
     private NoiseDescriptor primaryMap() {
         return new NoiseDescriptor()
-            .noise(NoiseType.SIMPLEX)
+            .noise(this.config.getMapType())
             .range(this.config.getMinY(), this.config.getMaxY())
             .frequency(this.config.getFrequency())
             .seed(this.tracker.getSeed());
@@ -90,7 +88,7 @@ public class HeightmapGenerator {
 
     private NoiseDescriptor grooves() {
         return new NoiseDescriptor()
-            .noise(NoiseType.PERLIN)
+            .noise(this.config.getGrooveType())
             .range(-this.config.getGrooveSize(), this.config.getGrooveSize())
             .frequency(this.config.getGrooveFrequency())
             .fractal(FractalType.FBM)

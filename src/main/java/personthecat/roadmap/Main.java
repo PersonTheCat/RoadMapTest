@@ -11,7 +11,8 @@ import java.util.Random;
 public class Main {
 
     public static void main(final String[] args) {
-        JsonContext.setDefaultFormatting(new JsonWriterOptions().setSmartSpacing(true));
+        JsonContext.setDefaultFormatting(
+            new JsonWriterOptions().setSmartSpacing(true).setOmitQuotes(true));
         new RoadMapTest().run();
     }
 
