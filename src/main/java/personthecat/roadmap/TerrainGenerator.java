@@ -65,8 +65,10 @@ public class TerrainGenerator {
         for (int y = cY + SIDE_VIEW_HALF - 1; y >= cY - SIDE_VIEW_HALF; y--) {
             this.drawSlice(image, map, y, o++);
         }
-        this.drawBackground(image);
-        return image;
+        if (this.config.getSideViewZoom() != 1) {
+            return this.zoom(image);
+        }
+        return this.drawBackground(image);
     }
 
     private void drawSlice(final BufferedImage image, final float[][] map, final int y, final int o) {
@@ -84,7 +86,7 @@ public class TerrainGenerator {
         }
     }
 
-    private void drawBackground(final BufferedImage image) {
+    private BufferedImage drawBackground(final BufferedImage image) {
         final int bg = this.config.getSideViewBackground().getRGB();
         for (int x = 0; x < image.getWidth(); x++) {
             for (int y = 0; y < image.getHeight(); y++) {
@@ -94,6 +96,33 @@ public class TerrainGenerator {
                 image.setRGB(x, y, bg);
             }
         }
+        return image;
+    }
+    
+    private BufferedImage zoom(final BufferedImage image) {
+        final float zoom = this.config.getSideViewZoom();
+        final BufferedImage zoomed = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
+        final Graphics2D g2d = zoomed.createGraphics();
+        this.drawBackground(zoomed);
+        if (zoom < 1) {
+            this.zoomOut(g2d, image, zoom);
+        } else {
+            this.zoomIn(g2d, image, zoom);
+        }
+        g2d.dispose();
+        return zoomed;
+    }
+
+    private void zoomOut(final Graphics g2d, final BufferedImage image, final float zoom) {
+        final float bx = image.getWidth() * (1 - zoom) / 2;
+        final float by = image.getHeight() * (1 - zoom) / 2;
+        g2d.drawImage(image, (int) bx, (int) by, (int) (image.getWidth() - bx), (int) (image.getHeight() - by), 0, 0, image.getWidth() - 1, image.getHeight() - 2, null);
+    }
+
+    private void zoomIn(final Graphics g2d, final BufferedImage image, final float zoom) {
+        final float bx = image.getWidth() * (1 - zoom) / 2;
+        final float by = image.getHeight() * (1 - zoom);
+        g2d.drawImage(image, (int) bx, (int) by, (int) (image.getWidth() - bx), image.getHeight(), 0, 0, image.getWidth() - 1, image.getHeight() - 2, this.config.getSideViewBackground(), null);
     }
 
     private BufferedImage drawMap(final float[][] map) {

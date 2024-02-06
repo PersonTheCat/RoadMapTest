@@ -30,10 +30,11 @@ public class Config {
     private float grooveFrequency = 0.02F;
     private float surfaceScale = 0.6F;
     private float sideViewAngle = 0.8F;
-    private Color sideViewBackground = Color.BLACK;
+    private float sideViewZoom = 1.25F;
     private boolean mountains = true;
     private NoiseType mapType = NoiseType.SIMPLEX;
     private NoiseType grooveType = NoiseType.PERLIN;
+    private Color sideViewBackground = Color.BLACK;
     private boolean hasErrors = false;
     private boolean missingFields = false;
 
@@ -90,8 +91,8 @@ public class Config {
         return this.sideViewAngle;
     }
 
-    public Color getSideViewBackground() {
-        return this.sideViewBackground;
+    public float getSideViewZoom() {
+        return this.sideViewZoom;
     }
 
     public boolean isMountains() {
@@ -104,6 +105,10 @@ public class Config {
 
     public NoiseType getGrooveType() {
         return this.grooveType;
+    }
+
+    public Color getSideViewBackground() {
+        return this.sideViewBackground;
     }
 
     public void reloadFromDisk() {
@@ -157,14 +162,16 @@ public class Config {
             .ifPresent(f -> this.surfaceScale = f);
         this.getFloat(json, "sideViewAngle", f -> f >= 0, "Must be > 0")
             .ifPresent(f -> this.sideViewAngle = f);
-        this.getEnum(json, "sideViewBackground", BackgroundColor.class, BackgroundColor::from)
-            .ifPresent(c -> this.sideViewBackground = c.get());
+        this.getFloat(json, "sideViewZoom", f -> f >= 0, "Must be > 0")
+            .ifPresent(f -> this.sideViewZoom = f);
         this.get(json, "mountains", this.wrap(JsonValue::asBoolean, x -> true, "Unexpected error"))
             .ifPresent(b -> this.mountains = b);
         this.getEnum(json, "mapType", NoiseType.class, NoiseType::from)
             .ifPresent(e -> this.mapType = e);
         this.getEnum(json, "grooveType", NoiseType.class, NoiseType::from)
             .ifPresent(e -> this.grooveType = e);
+        this.getEnum(json, "sideViewBackground", BackgroundColor.class, BackgroundColor::from)
+            .ifPresent(c -> this.sideViewBackground = c.get());
     }
 
     private Optional<Integer> getInt(
@@ -236,10 +243,11 @@ public class Config {
             .add("grooveFrequency", this.grooveFrequency, "Frequency for the groove noise.")
             .add("surfaceScale", this.surfaceScale, "The terrain scale when above sea level.")
             .add("sideViewAngle", this.sideViewAngle, "The ratio at which to drop closer pixels.")
-            .add("sideViewBackground", BackgroundColor.format(this.sideViewBackground), "The color to display as the background in side view mode")
+            .add("sideViewZoom", this.sideViewZoom, "The zoom ratio in side view mode, e.g. > 1 to zoom in, < 1 to zoom out.")
             .add("mountains", this.mountains, "Whether to enable mountainous terrain scaling.")
             .add("mapType", this.mapType.format(), "The type of noise to generate for the primary map.")
-            .add("grooveType", this.grooveType.format(), "The type of noise to generate for the grooves.");
+            .add("grooveType", this.grooveType.format(), "The type of noise to generate for the grooves.")
+            .add("sideViewBackground", BackgroundColor.format(this.sideViewBackground), "The color to display as the background in side view mode");
     }
 
     private void save(final JsonObject json) {
