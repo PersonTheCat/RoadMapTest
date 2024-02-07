@@ -18,7 +18,7 @@ public class Main {
 
     private static class RoadMapTest {
         final Config config = new Config(new File("config.xjs"));
-        final Tracker tracker = new Tracker(this.config);
+        final Tracker tracker = new Tracker();
         final Random rand = new Random();
         final TerrainGenerator generator = new TerrainGenerator(this.tracker, this.config, this.rand.nextInt());
         AppWindow window;
@@ -71,6 +71,7 @@ public class Main {
                 final int oW = this.config.getChunkWidth();
                 this.config.reloadFromDisk();
                 this.generator.reload();
+                this.tracker.reload(this.config);
                 if (oH != this.config.getChunkHeight() || oW != this.config.getChunkWidth()) {
                     if (this.window != null) {
                         this.window.pack();

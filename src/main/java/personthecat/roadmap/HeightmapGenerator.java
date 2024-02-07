@@ -71,6 +71,7 @@ public class HeightmapGenerator {
     private FastNoise createGenerator() {
         final NoiseDescriptor cfg = new NoiseDescriptor()
             .noise(NoiseType.MULTI)
+            .multi(MultiType.SUM)
             .noiseLookup(this.primaryMap(), this.grooves());
         if (this.config.isMountains()) {
             return cfg.scalar(HeightmapGenerator::scaleMountains).generate();
