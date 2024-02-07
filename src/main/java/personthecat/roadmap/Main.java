@@ -33,16 +33,28 @@ public class Main {
                 this.tracker.toggleMountains();
                 w.render(this.createNextImage(true, false));
             });
-            window.onKeyPressed('s', w -> {
-                this.tracker.toggleSideView();
-                w.render(this.createNextImage(true, false));
+            window.onKeyPressed('s', (w, e) -> {
+                if (e.isControlDown()) {
+                    this.config.save();
+                } else {
+                    this.tracker.toggleSideView();
+                    w.render(this.createNextImage(true, false));
+                }
             });
-            window.onKeyPressed(new int[] { KeyEvent.VK_EQUALS, KeyEvent.VK_PLUS }, w -> {
-                this.tracker.zoomIn();
+            window.onKeyPressed(new int[] { KeyEvent.VK_EQUALS, KeyEvent.VK_PLUS }, (w, e) -> {
+                if (e.isControlDown()) {
+                    this.tracker.angleUp();
+                } else {
+                    this.tracker.zoomIn();
+                }
                 w.render(this.createNextImage(false, false));
             });
-            window.onKeyPressed(KeyEvent.VK_MINUS, w -> {
-                this.tracker.zoomOut();
+            window.onKeyPressed(KeyEvent.VK_MINUS, (w, e) -> {
+                if (e.isControlDown()) {
+                    this.tracker.angleDown();
+                } else {
+                    this.tracker.zoomOut();
+                }
                 w.render(this.createNextImage(false, false));
             });
             window.onKeyPressed(new int[] { KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_RIGHT, KeyEvent.VK_LEFT }, (w, e, ks) -> {
@@ -71,6 +83,7 @@ public class Main {
                 final boolean oSideView = this.config.isSideView();
                 final boolean oMountains = this.config.isMountains();
                 final float oZoom = this.config.getZoom();
+                final float oSideViewAngle = this.config.getSideViewAngle();
                 this.config.reloadFromDisk();
                 if (oH != this.config.getChunkHeight() || oW != this.config.getChunkWidth()) {
                     if (this.window != null) {
@@ -85,6 +98,9 @@ public class Main {
                 }
                 if (oZoom != this.config.getZoom()) {
                     this.tracker.setZoom(this.config.getZoom());
+                }
+                if (oSideViewAngle != this.config.getSideViewAngle()) {
+                    this.tracker.setSideViewAngle(this.config.getSideViewAngle());
                 }
                 this.generator.reload();
             }

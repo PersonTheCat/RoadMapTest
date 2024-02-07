@@ -232,10 +232,12 @@ public class Config {
     public void saveIfUpdated(final Tracker tracker) {
         if (this.sideView != tracker.isSideView()
                 || this.mountains != tracker.isMountains()
-                || this.zoom != tracker.getZoom()) {
+                || this.zoom != tracker.getZoom()
+                || this.sideViewAngle != tracker.getSideViewAngle()) {
             this.sideView = tracker.isSideView();
             this.mountains = tracker.isMountains();
             this.zoom = tracker.getZoom();
+            this.sideViewAngle = tracker.getSideViewAngle();
             this.save();
         }
     }
@@ -269,6 +271,7 @@ public class Config {
     private void save(final JsonObject json) {
         try {
             json.write(this.file);
+            System.out.println("Config updated successfully!");
         } catch (final IOException e) {
             e.printStackTrace();
             System.err.println("Error saving config: " + e.getMessage());

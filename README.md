@@ -14,7 +14,12 @@ will regenerate.
 | r      | Reload the config and update the image |
 | m      | Toggle mountains on and off            |
 | s      | Toggle side view mode                  |
+| ctrl s | Save settings                          |
 | up     | Move the image up by one chunk         |
 | down   | Move the image down by one chunk       |
 | left   | Move the image left by one chunk       |
 | right  | Move the image right by one chunk      |
+| -      | Zoom out                               |
+| +      | Zoom in                                |
+| ctrl - | Angle up (in side view mode)           |
+| ctrl + | Angle down (in side view mode)         |

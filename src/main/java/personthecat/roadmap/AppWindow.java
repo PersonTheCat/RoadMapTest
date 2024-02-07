@@ -37,7 +37,7 @@ public class AppWindow extends WindowAdapter {
         this.onKeyPressed(key, (w, e) -> event.accept(w));
     }
 
-    public void onKeyPressed(final int[] anyKey, final Consumer<AppWindow> event) {
+    public void onKeyPressed(final int[] anyKey, final BiConsumer<AppWindow, KeyEvent> event) {
         for (final int key : anyKey) {
             this.onKeyPressed(key, event);
         }

@@ -10,11 +10,13 @@ public class Tracker {
     private boolean sideView;
     private boolean mountains;
     private float zoom;
+    private float sideViewAngle;
 
     public Tracker(final Config config) {
-        this.zoom = config.getZoom();
         this.sideView = config.isSideView();
         this.mountains = config.isMountains();
+        this.zoom = config.getZoom();
+        this.sideViewAngle = config.getSideViewAngle();
     }
 
     public void up(final int count) {
@@ -95,6 +97,22 @@ public class Tracker {
 
     public void zoomOut() {
         this.zoom -= 0.05;
+    }
+
+    public float getSideViewAngle() {
+        return this.sideViewAngle;
+    }
+
+    public void setSideViewAngle(final float sideViewAngle) {
+        this.sideViewAngle = sideViewAngle;
+    }
+
+    public void angleUp() {
+        this.sideViewAngle += 0.05;
+    }
+
+    public void angleDown() {
+        this.sideViewAngle -= 0.05;
     }
 
     public void reset() {

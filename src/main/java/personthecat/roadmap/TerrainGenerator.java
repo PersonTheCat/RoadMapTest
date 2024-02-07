@@ -86,7 +86,7 @@ public class TerrainGenerator {
     private void drawSlice(final BufferedImage image, final float[][] map, final int y, final int o) {
         for (int x = 0; x < map.length; x++) {
             final int n = (int) map[x][y];
-            final int a = n + (int) ((double) o * this.config.getSideViewAngle());
+            final int a = n + (int) ((double) o * this.tracker.getSideViewAngle());
             final Color base = this.getColor(n);
             final int c = this.darken(base.getRGB(), o / 32);
             for (int h = Math.min(a, map[0].length - 1); h >= 0; h--) {
