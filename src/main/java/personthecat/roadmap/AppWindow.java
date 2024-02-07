@@ -8,8 +8,11 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public class AppWindow extends WindowAdapter {
     private final JLabel label;
@@ -42,6 +45,10 @@ public class AppWindow extends WindowAdapter {
 
     public void onKeyPressed(final int key, final BiConsumer<AppWindow, KeyEvent> event) {
         this.window.addKeyListener(new KeyTypedListener(key, event));
+    }
+
+    public void onKeyPressed(final int[] anyKey, final MultiKeyEvent event) {
+        this.window.addKeyListener(new MultiKeyTypedListener(anyKey, event));
     }
 
     public void render(final BufferedImage image) {
@@ -153,5 +160,59 @@ public class AppWindow extends WindowAdapter {
         private boolean isUpdateReady() {
             return System.currentTimeMillis() - this.lastUpdate > config.getScrollCoolDown();
         }
+    }
+
+    private class MultiKeyTypedListener implements KeyListener {
+        final int[] anyKey;
+        final MultiKeyEvent event;
+        final Set<Integer> keysPressed;
+        long lastUpdate;
+
+        public MultiKeyTypedListener(final int[] anyKey, final MultiKeyEvent event) {
+            this.anyKey = anyKey;
+            this.event = event;
+            this.keysPressed = new HashSet<>();
+            this.lastUpdate = 0;
+        }
+
+        @Override
+        public void keyTyped(final KeyEvent e) {
+            this.keyPressed(e);
+        }
+
+        @Override
+        public void keyPressed(final KeyEvent e) {
+            if (!this.isUpdateReady()) {
+                return;
+            }
+            for (int key : this.anyKey) {
+                if (key == e.getKeyCode()) {
+                    this.keysPressed.add(key);
+                    this.event.accept(AppWindow.this, e, this.keysPressed::contains);
+                    this.lastUpdate = System.currentTimeMillis();
+                    return;
+                }
+            }
+        }
+
+        @Override
+        public void keyReleased(final KeyEvent e) {
+            for (int key : this.anyKey) {
+                if (key == e.getKeyCode()) {
+                    this.keysPressed.remove(key);
+                    this.lastUpdate = 0;
+                    return;
+                }
+            }
+        }
+
+        private boolean isUpdateReady() {
+            return System.currentTimeMillis() - this.lastUpdate > config.getScrollCoolDown();
+        }
+    }
+
+    @FunctionalInterface
+    public interface MultiKeyEvent {
+        void accept(final AppWindow w, final KeyEvent k, final Predicate<Integer> ks);
     }
 }

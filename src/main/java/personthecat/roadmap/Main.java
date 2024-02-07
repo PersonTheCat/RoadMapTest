@@ -46,20 +46,20 @@ public class Main {
                 this.tracker.zoomOut();
                 w.render(this.createNextImage(false, false));
             });
-            window.onKeyPressed(KeyEvent.VK_UP, (w, e) -> {
-                this.generator.up(e.isShiftDown() ? 3 : 1);
-                w.render(this.createNextImage(false, false));
-            });
-            window.onKeyPressed(KeyEvent.VK_DOWN, (w, e) -> {
-                this.generator.down(e.isShiftDown() ? 3 : 1);
-                w.render(this.createNextImage(false, false));
-            });
-            window.onKeyPressed(KeyEvent.VK_LEFT, (w, e) -> {
-                this.generator.left(e.isShiftDown() ? 3 : 1);
-                w.render(this.createNextImage(false, false));
-            });
-            window.onKeyPressed(KeyEvent.VK_RIGHT, (w, e) -> {
-                this.generator.right(e.isShiftDown() ? 3 : 1);
+            window.onKeyPressed(new int[] { KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_RIGHT, KeyEvent.VK_LEFT }, (w, e, ks) -> {
+                final int speed = e.isShiftDown() ? 3 : 1;
+                if (ks.test(KeyEvent.VK_UP)) {
+                    this.generator.up(speed);
+                }
+                if (ks.test(KeyEvent.VK_DOWN)) {
+                    this.generator.down(speed);
+                }
+                if (ks.test(KeyEvent.VK_LEFT)) {
+                    this.generator.left(speed);
+                }
+                if (ks.test(KeyEvent.VK_RIGHT)) {
+                    this.generator.right(speed);
+                }
                 w.render(this.createNextImage(false, false));
             });
             this.window = window;
