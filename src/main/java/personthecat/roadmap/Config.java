@@ -229,15 +229,12 @@ public class Config {
         };
     }
 
-    public void toggleMountains() {
-        this.mountains = !this.mountains;
-        this.save();
-    }
-
     public void saveIfUpdated(final Tracker tracker) {
         if (this.sideView != tracker.isSideView()
+                || this.mountains != tracker.isMountains()
                 || this.zoom != tracker.getZoom()) {
             this.sideView = tracker.isSideView();
+            this.mountains = tracker.isMountains();
             this.zoom = tracker.getZoom();
             this.save();
         }

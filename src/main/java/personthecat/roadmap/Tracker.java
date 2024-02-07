@@ -7,10 +7,15 @@ public class Tracker {
     private int prevXOffset = 0;
     private int prevYOffset = 0;
     private int seed = 0;
-    private float zoom = 0;
-    private boolean sideView = false;
+    private boolean sideView;
+    private boolean mountains;
+    private float zoom;
 
-    public Tracker() {}
+    public Tracker(final Config config) {
+        this.zoom = config.getZoom();
+        this.sideView = config.isSideView();
+        this.mountains = config.isMountains();
+    }
 
     public void up(final int count) {
         this.yOffset -= 32 * count;
@@ -56,12 +61,32 @@ public class Tracker {
         return this.sideView;
     }
 
+    public void setSideView(final boolean sideView) {
+        this.sideView = sideView;
+    }
+
     public void toggleSideView() {
         this.sideView = !this.sideView;
     }
 
+    public boolean isMountains() {
+        return this.mountains;
+    }
+
+    public void setMountains(final boolean mountains) {
+        this.mountains = mountains;
+    }
+
+    public void toggleMountains() {
+        this.mountains = !this.mountains;
+    }
+
     public float getZoom() {
         return this.zoom;
+    }
+
+    public void setZoom(final float zoom) {
+        this.zoom = zoom;
     }
 
     public void zoomIn() {
@@ -70,11 +95,6 @@ public class Tracker {
 
     public void zoomOut() {
         this.zoom -= 0.05;
-    }
-
-    public void reload(final Config config) {
-        this.sideView = config.isSideView();
-        this.zoom = config.getZoom();
     }
 
     public void reset() {

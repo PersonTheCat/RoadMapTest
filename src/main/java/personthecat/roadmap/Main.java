@@ -18,7 +18,7 @@ public class Main {
 
     private static class RoadMapTest {
         final Config config = new Config(new File("config.xjs"));
-        final Tracker tracker = new Tracker();
+        final Tracker tracker = new Tracker(this.config);
         final Random rand = new Random();
         final TerrainGenerator generator = new TerrainGenerator(this.tracker, this.config, this.rand.nextInt());
         AppWindow window;
@@ -30,12 +30,11 @@ public class Main {
             window.onKeyPressed(KeyEvent.VK_ESCAPE, AppWindow::close);
 
             window.onKeyPressed('m', w -> {
-                this.config.toggleMountains();
+                this.tracker.toggleMountains();
                 w.render(this.createNextImage(true, false));
             });
             window.onKeyPressed('s', w -> {
                 this.tracker.toggleSideView();
-                w.pack();
                 w.render(this.createNextImage(true, false));
             });
             window.onKeyPressed(new int[] { KeyEvent.VK_EQUALS, KeyEvent.VK_PLUS }, w -> {
@@ -69,14 +68,25 @@ public class Main {
             if (reload) {
                 final int oH = this.config.getChunkHeight();
                 final int oW = this.config.getChunkWidth();
+                final boolean oSideView = this.config.isSideView();
+                final boolean oMountains = this.config.isMountains();
+                final float oZoom = this.config.getZoom();
                 this.config.reloadFromDisk();
-                this.generator.reload();
-                this.tracker.reload(this.config);
                 if (oH != this.config.getChunkHeight() || oW != this.config.getChunkWidth()) {
                     if (this.window != null) {
                         this.window.pack();
                     }
                 }
+                if (oSideView != this.config.isSideView()) {
+                    this.tracker.setSideView(this.config.isSideView());
+                }
+                if (oMountains != this.config.isMountains()) {
+                    this.tracker.setMountains(this.config.isMountains());
+                }
+                if (oZoom != this.config.getZoom()) {
+                    this.tracker.setZoom(this.config.getZoom());
+                }
+                this.generator.reload();
             }
             if (newSeed) {
                 this.generator.next(this.rand.nextInt());

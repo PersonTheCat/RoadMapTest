@@ -73,7 +73,7 @@ public class HeightmapGenerator {
             .noise(NoiseType.MULTI)
             .multi(MultiType.SUM)
             .noiseLookup(this.primaryMap(), this.grooves());
-        if (this.config.isMountains()) {
+        if (this.tracker.isMountains()) {
             return cfg.scalar(HeightmapGenerator::scaleMountains).generate();
         }
         return cfg.generate();
