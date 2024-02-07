@@ -20,10 +20,10 @@ public class Config {
     private final File file;
     private int chunkHeight = 64;
     private int chunkWidth = 64;
-    private int grooveSize = 20;
-    private int minY = -100;
+    private int grooveSize = 15;
+    private int minY = -50;
     private int maxY = 96;
-    private int resolution = 12;
+    private int resolution = 4;
     private int scrollCoolDown = 3;
     private int gridOpacity = 14;
     private float frequency = 0.0025F;
@@ -33,7 +33,7 @@ public class Config {
     private float zoom = 1.25F;
     private boolean sideView = false;
     private boolean mountains = true;
-    private NoiseType mapType = NoiseType.SIMPLEX;
+    private NoiseType mapType = NoiseType.SIMPLEX2S;
     private NoiseType grooveType = NoiseType.PERLIN;
     private Color backgroundColor = Color.BLACK;
     private boolean hasErrors = false;
