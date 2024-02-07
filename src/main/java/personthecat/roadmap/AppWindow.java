@@ -1,11 +1,13 @@
 package personthecat.roadmap;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -14,14 +16,18 @@ public class AppWindow extends WindowAdapter {
     private final JFrame window;
     private final Config config;
     private final Tracker tracker;
+    private BufferedImage output;
+    private Graphics2D graphics;
 
     public AppWindow(final Config config, final Tracker tracker, final BufferedImage image) {
         this.label = new JLabel();
-        this.render(image);
         this.window = createWindow(this.label);
         this.config = config;
         this.tracker = tracker;
         this.window.addWindowListener(this);
+        this.output = image;
+        this.pack();
+        this.render(image);
     }
 
     public void onKeyPressed(final int key, final Consumer<AppWindow> event) {
@@ -39,13 +45,57 @@ public class AppWindow extends WindowAdapter {
     }
 
     public void render(final BufferedImage image) {
-        this.label.setIcon(new ImageIcon(image));
+        final float zoom = this.tracker.getZoom();
+        if (zoom == 1) {
+            this.drawImage(image);
+        } else if (zoom < 1) {
+            this.drawZoomedOut(image, zoom);
+        } else {
+            this.drawZoomedIn(image, zoom);
+        }
+        this.label.repaint();
+    }
+
+    private void drawImage(final BufferedImage image) {
+        int[] src = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
+        int[] dst = ((DataBufferInt) this.output.getRaster().getDataBuffer()).getData();
+        System.arraycopy(src, 0, dst, 0, dst.length);
+    }
+
+    private void drawZoomedOut(final BufferedImage image, final float zoom) {
+        this.graphics.setBackground(this.config.getBackgroundColor());
+        this.graphics.clearRect(0, 0, this.output.getWidth(), this.output.getHeight());
+        final float bx = image.getWidth() * (1 - zoom) / 2;
+        final float by = image.getHeight() * (1 - zoom) / 2;
+        this.graphics.drawImage(image, (int) bx, (int) by, (int) (image.getWidth() - bx), (int) (image.getHeight() - by), 0, 0, image.getWidth() - 1, image.getHeight() - 2, null);
+    }
+
+    private void drawZoomedIn(final BufferedImage image, final float zoom) {
+        final float bx = image.getWidth() * (1 - zoom) / 2;
+        final float by = image.getHeight() * (1 - zoom);
+        this.graphics.drawImage(image, (int) bx, (int) by, (int) (image.getWidth() - bx), image.getHeight(), 0, 0, image.getWidth() - 1, image.getHeight() - 2, this.config.getBackgroundColor(), null);
     }
 
     public void pack() {
         final int width = this.config.getChunkWidth() << 4;
         final int height = this.config.getChunkHeight() << 4;
         this.window.setSize(width, height);
+        this.resetOutput();
+    }
+
+    private void resetOutput() {
+        this.output = this.createNewImage();
+        if (this.graphics != null) {
+            this.graphics.dispose();
+        }
+        this.graphics = this.output.createGraphics();
+        this.label.setIcon(new ImageIcon(this.output));
+    }
+
+    private BufferedImage createNewImage() {
+        final int w = this.config.getChunkWidth() << 4;
+        final int h = this.config.getChunkHeight() << 4;
+        return new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
     }
 
     @Override

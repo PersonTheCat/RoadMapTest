@@ -7,11 +7,11 @@ public class Tracker {
     private int prevXOffset = 0;
     private int prevYOffset = 0;
     private int seed = 0;
-    private float sideViewZoom;
+    private float zoom;
     private boolean sideView;
 
     public Tracker(final Config config) {
-        this.sideViewZoom = config.getSideViewZoom();
+        this.zoom = config.getZoom();
         this.sideView = config.isSideView();
     }
 
@@ -63,16 +63,16 @@ public class Tracker {
         this.sideView = !this.sideView;
     }
 
-    public float getSideViewZoom() {
-        return this.sideViewZoom;
+    public float getZoom() {
+        return this.zoom;
     }
 
     public void zoomIn() {
-        this.sideViewZoom += 0.05;
+        this.zoom += 0.05;
     }
 
     public void zoomOut() {
-        this.sideViewZoom -= 0.05;
+        this.zoom -= 0.05;
     }
 
     public void reset() {

@@ -24,7 +24,7 @@ public class Main {
         AppWindow window;
 
         void run() {
-            final var window = new AppWindow(this.config, this.tracker, this.createNextImage(false, false));
+            final var window = new AppWindow(this.config, this.tracker, this.createNextImage(true, true));
             window.onKeyPressed(KeyEvent.VK_SPACE, w -> w.render(this.createNextImage(false, true)));
             window.onKeyPressed('r', w -> w.render(this.createNextImage(true, false)));
             window.onKeyPressed(KeyEvent.VK_ESCAPE, AppWindow::close);
@@ -35,16 +35,16 @@ public class Main {
             });
             window.onKeyPressed('s', w -> {
                 this.tracker.toggleSideView();
-                w.render(this.createNextImage(true, false));
                 w.pack();
+                w.render(this.createNextImage(true, false));
             });
             window.onKeyPressed(new int[] { KeyEvent.VK_EQUALS, KeyEvent.VK_PLUS }, w -> {
                 this.tracker.zoomIn();
-                w.render(this.createNextImage(true, false));
+                w.render(this.createNextImage(false, false));
             });
             window.onKeyPressed(KeyEvent.VK_MINUS, w -> {
                 this.tracker.zoomOut();
-                w.render(this.createNextImage(true, false));
+                w.render(this.createNextImage(false, false));
             });
             window.onKeyPressed(KeyEvent.VK_UP, (w, e) -> {
                 this.generator.up(e.isShiftDown() ? 3 : 1);

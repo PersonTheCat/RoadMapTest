@@ -30,12 +30,12 @@ public class Config {
     private float grooveFrequency = 0.02F;
     private float surfaceScale = 0.6F;
     private float sideViewAngle = 0.8F;
-    private float sideViewZoom = 1.25F;
+    private float zoom = 1.25F;
     private boolean sideView = false;
     private boolean mountains = true;
     private NoiseType mapType = NoiseType.SIMPLEX;
     private NoiseType grooveType = NoiseType.PERLIN;
-    private Color sideViewBackground = Color.BLACK;
+    private Color backgroundColor = Color.BLACK;
     private boolean hasErrors = false;
     private boolean missingFields = false;
 
@@ -92,8 +92,8 @@ public class Config {
         return this.sideViewAngle;
     }
 
-    public float getSideViewZoom() {
-        return this.sideViewZoom;
+    public float getZoom() {
+        return this.zoom;
     }
 
     public boolean isSideView() {
@@ -112,8 +112,8 @@ public class Config {
         return this.grooveType;
     }
 
-    public Color getSideViewBackground() {
-        return this.sideViewBackground;
+    public Color getBackgroundColor() {
+        return this.backgroundColor;
     }
 
     public void reloadFromDisk() {
@@ -167,16 +167,16 @@ public class Config {
             .ifPresent(f -> this.surfaceScale = f);
         this.getFloat(json, "sideViewAngle", f -> f >= 0, "Must be > 0")
             .ifPresent(f -> this.sideViewAngle = f);
-        this.getFloat(json, "sideViewZoom", f -> f >= 0, "Must be > 0")
-            .ifPresent(f -> this.sideViewZoom = f);
+        this.getFloat(json, "zoom", f -> f >= 0, "Must be > 0")
+            .ifPresent(f -> this.zoom = f);
         this.getBoolean(json, "mountains").ifPresent(b -> this.mountains = b);
         this.getBoolean(json, "sideView").ifPresent(b -> this.sideView = b);
         this.getEnum(json, "mapType", NoiseType.class, NoiseType::from)
             .ifPresent(e -> this.mapType = e);
         this.getEnum(json, "grooveType", NoiseType.class, NoiseType::from)
             .ifPresent(e -> this.grooveType = e);
-        this.getEnum(json, "sideViewBackground", BackgroundColor.class, BackgroundColor::from)
-            .ifPresent(c -> this.sideViewBackground = c.get());
+        this.getEnum(json, "backgroundColor", BackgroundColor.class, BackgroundColor::from)
+            .ifPresent(c -> this.backgroundColor = c.get());
     }
 
     private Optional<Integer> getInt(
@@ -236,9 +236,9 @@ public class Config {
 
     public void saveIfUpdated(final Tracker tracker) {
         if (this.sideView != tracker.isSideView()
-                || this.sideViewZoom != tracker.getSideViewZoom()) {
+                || this.zoom != tracker.getZoom()) {
             this.sideView = tracker.isSideView();
-            this.sideViewZoom = tracker.getSideViewZoom();
+            this.zoom = tracker.getZoom();
             this.save();
         }
     }
@@ -261,12 +261,12 @@ public class Config {
             .add("grooveFrequency", this.grooveFrequency, "Frequency for the groove noise.")
             .add("surfaceScale", this.surfaceScale, "The terrain scale when above sea level.")
             .add("sideViewAngle", this.sideViewAngle, "The ratio at which to drop closer pixels.")
-            .add("sideViewZoom", this.sideViewZoom, "The zoom ratio in side view mode, e.g. > 1 to zoom in, < 1 to zoom out.")
+            .add("zoom", this.zoom, "The zoom ratio in side view mode, e.g. > 1 to zoom in, < 1 to zoom out.")
             .add("mountains", this.mountains, "Whether to enable mountainous terrain scaling.")
             .add("sideView", this.sideView, "Whether to display the terrain in side view mode.")
             .add("mapType", this.mapType.format(), "The type of noise to generate for the primary map.")
             .add("grooveType", this.grooveType.format(), "The type of noise to generate for the grooves.")
-            .add("sideViewBackground", BackgroundColor.format(this.sideViewBackground), "The color to display as the background in side view mode");
+            .add("backgroundColor", BackgroundColor.format(this.backgroundColor), "The color to display as the background in side view mode");
     }
 
     private void save(final JsonObject json) {
