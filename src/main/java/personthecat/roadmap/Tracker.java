@@ -4,8 +4,8 @@ import java.util.Random;
 
 public class Tracker {
 
-    private int xOffset = 0;
-    private int yOffset = 0;
+    private int xOffset;
+    private int yOffset;
     private int prevXOffset = 0;
     private int prevYOffset = 0;
     private int seed;
@@ -23,7 +23,7 @@ public class Tracker {
         this.mountains = config.isMountains();
         this.zoom = config.getZoom();
         this.sideViewAngle = config.getSideViewAngle();
-        this.history.recordHistory(this);
+        this.history.addHistory(this);
     }
 
     public void up(final int count) {
@@ -73,7 +73,7 @@ public class Tracker {
     public void setSeed(final int seed) {
         this.history.jumpToEnd();
         this.seed = seed;
-        this.history.recordHistory(this);
+        this.history.addHistory(this);
     }
 
     public void nextSeed(final Random rand) {
@@ -83,10 +83,11 @@ public class Tracker {
             return;
         }
         this.seed = rand.nextInt();
-        this.history.recordHistory(this);
+        this.history.addHistory(this);
     }
 
     public void previousSeed() {
+        this.history.updateHistory(this);
         final HistoryItem item = this.history.previous();
         if (item != null) {
             this.applyHistory(item);
@@ -167,9 +168,13 @@ public class Tracker {
         private int index = 0;
         private int count = 0;
 
-        void recordHistory(final Tracker t) {
-            this.items[this.index] = new HistoryItem(t.seed, t.xOffset, t.yOffset);
+        void addHistory(final Tracker t) {
+            this.updateHistory(t);
             this.count++;
+        }
+
+        void updateHistory(final Tracker t) {
+            this.items[this.index] = new HistoryItem(t.seed, t.xOffset, t.yOffset);
         }
 
         HistoryItem next() {

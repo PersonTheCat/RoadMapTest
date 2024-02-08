@@ -10,6 +10,7 @@ will regenerate.
 | Button | Description                            |
 |--------|----------------------------------------|
 | space  | Generate a new image and seed          |
+| bSpace | Restore the previous image and seed    |
 | esc    | Exit the application                   |
 | r      | Reload the config and update the image |
 | m      | Toggle mountains on and off            |
