@@ -20,21 +20,28 @@ public class Main {
         final Config config = new Config(new File("config.xjs"));
         final Tracker tracker = new Tracker(this.config);
         final Random rand = new Random();
-        final TerrainGenerator generator = new TerrainGenerator(this.tracker, this.config, this.rand.nextInt());
+        final TerrainGenerator generator = new TerrainGenerator(this.tracker, this.config);
         AppWindow window;
 
         void run() {
-            final var window = new AppWindow(this.config, this.tracker, this.createNextImage(true, true));
-            window.onKeyPressed(KeyEvent.VK_SPACE, w -> w.render(this.createNextImage(false, true)));
+            final var window = new AppWindow(this.config, this.tracker, this.createNextImage(true));
             window.onKeyPressed(KeyEvent.VK_ESCAPE, AppWindow::close);
 
+            window.onKeyPressed(KeyEvent.VK_SPACE, w -> {
+                this.generator.next(this.rand);
+                w.render(this.createNextImage(true));
+            });
+            window.onKeyPressed(KeyEvent.VK_BACK_SPACE, w -> {
+                this.generator.previous();
+                w.render(this.createNextImage(true));
+            });
             window.onKeyPressed('r', w -> {
                 this.reloadConfig();
-                w.render(this.createNextImage(true, false));
+                w.render(this.createNextImage(true));
             });
             window.onKeyPressed('m', w -> {
                 this.tracker.toggleMountains();
-                w.render(this.createNextImage(true, false));
+                w.render(this.createNextImage(true));
             });
             window.onKeyPressed(KeyEvent.VK_S, (w, e) -> {
                 if (e.isControlDown()) {
@@ -43,7 +50,7 @@ public class Main {
             });
             window.onKeyPressed('s', w -> {
                 this.tracker.toggleSideView();
-                w.render(this.createNextImage(false, false));
+                w.render(this.createNextImage(false));
             });
             window.onKeyPressed(new int[] { KeyEvent.VK_EQUALS, KeyEvent.VK_PLUS }, (w, e) -> {
                 if (e.isControlDown()) {
@@ -51,7 +58,7 @@ public class Main {
                 } else {
                     this.tracker.zoomIn();
                 }
-                w.render(this.createNextImage(false, false));
+                w.render(this.createNextImage(false));
             });
             window.onKeyPressed(KeyEvent.VK_MINUS, (w, e) -> {
                 if (e.isControlDown()) {
@@ -59,10 +66,10 @@ public class Main {
                 } else {
                     this.tracker.zoomOut();
                 }
-                w.render(this.createNextImage(false, false));
+                w.render(this.createNextImage(false));
             });
             window.onKeyPressed(new int[] { KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_RIGHT, KeyEvent.VK_LEFT }, (w, e, ks) -> {
-                final int speed = e.isShiftDown() ? 3 : 1;
+                final int speed = e.isShiftDown() ? this.config.getScrollAmount() : 1;
                 if (ks.test(KeyEvent.VK_UP)) {
                     this.generator.up(speed);
                 }
@@ -75,17 +82,14 @@ public class Main {
                 if (ks.test(KeyEvent.VK_RIGHT)) {
                     this.generator.right(speed);
                 }
-                w.render(this.createNextImage(false, false));
+                w.render(this.createNextImage(false));
             });
             this.window = window;
         }
 
-        BufferedImage createNextImage(final boolean reload, final boolean newSeed) {
+        BufferedImage createNextImage(final boolean reload) {
             if (reload) {
                 this.generator.reload();
-            }
-            if (newSeed) {
-                this.generator.next(this.rand.nextInt());
             }
             return this.generator.generate(reload);
         }
@@ -93,6 +97,9 @@ public class Main {
         void reloadConfig() {
             final int oH = this.config.getChunkHeight();
             final int oW = this.config.getChunkWidth();
+            final int oSeed = this.config.getSeed();
+            final int oXOffset = this.config.getXOffset();
+            final int oYOffset = this.config.getYOffset();
             final boolean oSideView = this.config.isSideView();
             final boolean oMountains = this.config.isMountains();
             final float oZoom = this.config.getZoom();
@@ -102,6 +109,15 @@ public class Main {
                 if (this.window != null) {
                     this.window.pack();
                 }
+            }
+            if (oSeed != this.config.getSeed()) {
+                this.tracker.setSeed(this.config.getSeed());
+            }
+            if (oXOffset != this.config.getXOffset()) {
+                this.tracker.setXOffset(this.config.getXOffset());
+            }
+            if (oYOffset != this.config.getYOffset()) {
+                this.tracker.setYOffset(this.config.getYOffset());
             }
             if (oSideView != this.config.isSideView()) {
                 this.tracker.setSideView(this.config.isSideView());

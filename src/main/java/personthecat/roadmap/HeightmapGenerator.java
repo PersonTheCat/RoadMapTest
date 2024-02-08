@@ -10,14 +10,9 @@ public class HeightmapGenerator {
     private FastNoise generator;
     private float[][] prevMap;
 
-    public HeightmapGenerator(final Config config, final Tracker tracker, final int seed) {
+    public HeightmapGenerator(final Config config, final Tracker tracker) {
         this.config = config;
         this.tracker = tracker;
-        this.next(seed);
-    }
-
-    public void next(final int seed) {
-        this.tracker.setSeed(seed);
         this.reload();
     }
 

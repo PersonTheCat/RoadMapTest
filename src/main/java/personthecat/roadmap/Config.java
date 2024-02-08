@@ -24,8 +24,12 @@ public class Config {
     private int minY = -50;
     private int maxY = 96;
     private int resolution = 4;
+    private int scrollAmount = 3;
     private int scrollCoolDown = 3;
     private int gridOpacity = 14;
+    private int seed = 0;
+    private int xOffset = 0;
+    private int yOffset = 0;
     private float frequency = 0.0025F;
     private float grooveFrequency = 0.02F;
     private float surfaceScale = 0.6F;
@@ -68,12 +72,28 @@ public class Config {
         return this.resolution;
     }
 
+    public int getScrollAmount() {
+        return this.scrollAmount;
+    }
+
     public int getScrollCoolDown() {
         return this.scrollCoolDown;
     }
 
     public int getGridOpacity() {
         return this.gridOpacity;
+    }
+
+    public int getSeed() {
+        return this.seed;
+    }
+
+    public int getXOffset() {
+        return this.xOffset;
+    }
+
+    public int getYOffset() {
+        return this.yOffset;
     }
 
     public float getFrequency() {
@@ -155,10 +175,18 @@ public class Config {
             .ifPresent(i -> this.maxY = i);
         this.getInt(json, "resolution", i -> i > 0 && i <= this.maxY, "Must be 1 ~ maxY")
             .ifPresent(i -> this.resolution = i);
+        this.getInt(json, "scrollAmount", i -> i > 0, "Must be > 0")
+            .ifPresent(i -> this.scrollAmount = i);
         this.getInt(json, "scrollCoolDown", i -> i >= 0, "Must be >= 0")
             .ifPresent(i -> this.scrollCoolDown = i);
         this.getInt(json, "gridOpacity", i -> i >= 0, "Must be >= 0")
             .ifPresent(i -> this.gridOpacity = i);
+        this.getInt(json, "seed", i -> true, "Unexpected error occurred")
+            .ifPresent(i -> this.seed = i);
+        this.getInt(json, "xOffset", i -> true, "Unexpected error occurred")
+            .ifPresent(i -> this.xOffset = i);
+        this.getInt(json, "yOffset", i -> true, "Unexpected error occurred")
+            .ifPresent(i -> this.yOffset = i);
         this.getFloat(json, "frequency", f -> f > 0, "Must be > 0")
             .ifPresent(f -> this.frequency = f);
         this.getFloat(json, "grooveFrequency", f -> f > 0, "Must be > 0")
@@ -230,10 +258,16 @@ public class Config {
     }
 
     public void saveIfUpdated(final Tracker tracker) {
-        if (this.sideView != tracker.isSideView()
+        if (this.seed != tracker.getSeed()
+                || this.xOffset != tracker.getXOffset()
+                || this.yOffset != tracker.getYOffset()
+                || this.sideView != tracker.isSideView()
                 || this.mountains != tracker.isMountains()
                 || this.zoom != tracker.getZoom()
                 || this.sideViewAngle != tracker.getSideViewAngle()) {
+            this.seed = tracker.getSeed();
+            this.xOffset = tracker.getXOffset();
+            this.yOffset = tracker.getYOffset();
             this.sideView = tracker.isSideView();
             this.mountains = tracker.isMountains();
             this.zoom = tracker.getZoom();
@@ -254,8 +288,12 @@ public class Config {
             .add("minY", this.minY, "The minimum y-coordinate to generate.")
             .add("maxY", this.maxY, "The maximum y-coordinate to generate.")
             .add("resolution", this.resolution, "The number of y-levels to render as the same color.")
+            .add("scrollAmount", this.scrollAmount, "How many chunks to pan the camera while holding shift.")
             .add("scrollCoolDown", this.scrollCoolDown, "The scroll delay in ms.")
             .add("gridOpacity", this.gridOpacity, "The opacity of the main grid lines over the map.")
+            .add("seed", this.seed, "The seed to use for the generated terrain")
+            .add("xOffset", this.xOffset, "The number of blocks to offset the generator on the x-axis")
+            .add("yOffset", this.yOffset, "The number of blocks to offset the generator on the y-axis")
             .add("frequency", this.frequency, "Noise frequency for the main noise map.")
             .add("grooveFrequency", this.grooveFrequency, "Frequency for the groove noise.")
             .add("surfaceScale", this.surfaceScale, "The terrain scale when above sea level.")
@@ -265,7 +303,7 @@ public class Config {
             .add("sideView", this.sideView, "Whether to display the terrain in side view mode.")
             .add("mapType", this.mapType.format(), "The type of noise to generate for the primary map.")
             .add("grooveType", this.grooveType.format(), "The type of noise to generate for the grooves.")
-            .add("backgroundColor", BackgroundColor.format(this.backgroundColor), "The color to display as the background in side view mode");
+            .add("backgroundColor", BackgroundColor.format(this.backgroundColor), "The color to display as the background in side view mode.");
     }
 
     private void save(final JsonObject json) {

@@ -17,17 +17,22 @@ public class TerrainGenerator {
     private BufferedImage buffer;
     private Graphics2D graphics;
 
-    public TerrainGenerator(final Tracker tracker, final Config config, final int seed) {
+    public TerrainGenerator(final Tracker tracker, final Config config) {
         this.tracker = tracker;
-        this.mapGenerator = new HeightmapGenerator(config, this.tracker, seed);
+        this.mapGenerator = new HeightmapGenerator(config, this.tracker);
         this.roadGenerator = new RoadMapGenerator(config, this.tracker, this.mapGenerator);
         this.config = config;
-        this.rand = new Random(seed);
+        this.rand = new Random();
     }
 
-    public void next(final int seed) {
-        this.mapGenerator.next(seed);
-        this.rand.setSeed(seed);
+    public void next(final Random rand) {
+        this.tracker.nextSeed(rand);
+        this.rand.setSeed(this.tracker.getSeed());
+    }
+
+    public void previous() {
+        this.tracker.previousSeed();
+        this.rand.setSeed(this.tracker.getSeed());
     }
 
     public void reload() {

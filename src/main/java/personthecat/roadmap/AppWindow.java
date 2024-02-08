@@ -139,14 +139,15 @@ public class AppWindow extends WindowAdapter {
 
         @Override
         public void keyTyped(final KeyEvent e) {
-            if (this.key == e.getKeyChar()) {
+            if (this.isUpdateReady() && this.key == e.getKeyChar()) {
                 this.event.accept(AppWindow.this, e);
+                this.lastUpdate = System.currentTimeMillis();
             }
         }
 
         @Override
         public void keyPressed(final KeyEvent e) {
-            if (this.isUpdateReady() && this.key == e.getKeyCode()) {
+            if (this.isUpdateReady() && this.key == e.getKeyCode() && e.getKeyChar() == KeyEvent.CHAR_UNDEFINED) {
                 this.event.accept(AppWindow.this, e);
                 this.lastUpdate = System.currentTimeMillis();
             }
