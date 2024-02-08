@@ -132,12 +132,12 @@ public class Tracker {
         this.zoom = zoom;
     }
 
-    public void zoomIn() {
-        this.zoom += 0.05;
+    public void zoomIn(final int amount) {
+        this.zoom += 0.05 * amount;
     }
 
-    public void zoomOut() {
-        this.zoom -= 0.05;
+    public void zoomOut(final int amount) {
+        this.zoom -= 0.05 * amount;
     }
 
     public float getSideViewAngle() {

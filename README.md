@@ -20,7 +20,7 @@ will regenerate.
 | down   | Move the image down by one chunk       |
 | left   | Move the image left by one chunk       |
 | right  | Move the image right by one chunk      |
-| shift  | Hold to move faster                    |
+| shift  | Hold to move or zoom faster            |
 | -      | Zoom out                               |
 | +      | Zoom in                                |
 | ctrl - | Angle up (in side view mode)           |

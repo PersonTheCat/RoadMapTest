@@ -55,18 +55,22 @@ public class Main {
             window.onKeyPressed(new int[] { KeyEvent.VK_EQUALS, KeyEvent.VK_PLUS }, (w, e) -> {
                 if (e.isControlDown()) {
                     this.tracker.angleUp();
-                } else {
-                    this.tracker.zoomIn();
+                    w.render(this.createNextImage(false));
+                    return;
                 }
-                w.render(this.createNextImage(false));
+                final int amount = e.isShiftDown() ? 3 : 1;
+                this.tracker.zoomIn(amount);
+                w.render(this.generator.getBuffer());
             });
             window.onKeyPressed(KeyEvent.VK_MINUS, (w, e) -> {
                 if (e.isControlDown()) {
                     this.tracker.angleDown();
-                } else {
-                    this.tracker.zoomOut();
+                    w.render(this.createNextImage(false));
+                    return;
                 }
-                w.render(this.createNextImage(false));
+                final int amount = e.isShiftDown() ? 3 : 1;
+                this.tracker.zoomOut(amount);
+                w.render(this.generator.getBuffer());
             });
             window.onKeyPressed(new int[] { KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_RIGHT, KeyEvent.VK_LEFT }, (w, e, ks) -> {
                 final int speed = e.isShiftDown() ? this.config.getScrollAmount() : 1;

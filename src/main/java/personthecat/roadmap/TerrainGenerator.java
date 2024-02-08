@@ -55,6 +55,10 @@ public class TerrainGenerator {
         this.tracker.right(count);
     }
 
+    public BufferedImage getBuffer() {
+        return this.buffer;
+    }
+
     public BufferedImage generate(final boolean reload) {
         final int w = this.config.getChunkWidth() << 4;
         final int h = this.config.getChunkHeight() << 4;
@@ -141,9 +145,9 @@ public class TerrainGenerator {
                 final int gCapped = this.cap(rb - rbStep + 25);
                 return new Color(rbCapped, gCapped, rbCapped);
             }
-            return new Color(0, capped, 0);
+            return new Color(50, capped, 0);
         }
-        return new Color(0, 0, this.cap(100 + (int) n));
+        return new Color(25, 25, this.cap(100 + (int) n));
     }
 
     private void drawGridLines(final BufferedImage image) {
