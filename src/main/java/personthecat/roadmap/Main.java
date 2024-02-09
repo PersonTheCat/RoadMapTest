@@ -53,24 +53,30 @@ public class Main {
                 w.render(this.createNextImage(false));
             });
             window.onKeyPressed(new int[] { KeyEvent.VK_EQUALS, KeyEvent.VK_PLUS }, (w, e) -> {
-                if (e.isControlDown()) {
-                    this.tracker.angleUp();
-                    w.render(this.createNextImage(false));
-                    return;
-                }
                 final int amount = e.isShiftDown() ? 3 : 1;
-                this.tracker.zoomIn(amount);
-                w.render(this.generator.getBuffer());
+                if (e.isControlDown()) {
+                    this.tracker.angleUp(amount);
+                    w.render(this.createNextImage(false));
+                } else if (e.isAltDown()) {
+                    this.tracker.anchoredFrequencyUp(this.config, amount);
+                    w.render(this.createNextImage(true));
+                } else {
+                    this.tracker.zoomIn(amount);
+                    w.render(this.generator.getBuffer());
+                }
             });
             window.onKeyPressed(KeyEvent.VK_MINUS, (w, e) -> {
-                if (e.isControlDown()) {
-                    this.tracker.angleDown();
-                    w.render(this.createNextImage(false));
-                    return;
-                }
                 final int amount = e.isShiftDown() ? 3 : 1;
-                this.tracker.zoomOut(amount);
-                w.render(this.generator.getBuffer());
+                if (e.isControlDown()) {
+                    this.tracker.angleDown(amount);
+                    w.render(this.createNextImage(false));
+                } else if (e.isAltDown()) {
+                    this.tracker.anchoredFrequencyDown(this.config, amount);
+                    w.render(this.createNextImage(true));
+                } else {
+                    this.tracker.zoomOut(amount);
+                    w.render(this.generator.getBuffer());
+                }
             });
             window.onKeyPressed(new int[] { KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_RIGHT, KeyEvent.VK_LEFT }, (w, e, ks) -> {
                 final int speed = e.isShiftDown() ? this.config.getScrollAmount() : 1;
@@ -108,6 +114,8 @@ public class Main {
             final boolean oMountains = this.config.isMountains();
             final float oZoom = this.config.getZoom();
             final float oSideViewAngle = this.config.getSideViewAngle();
+            final float oFrequency = this.config.getFrequency();
+            final float oGrooveFrequency = this.config.getGrooveFrequency();
             this.config.reloadFromDisk();
             if (oH != this.config.getChunkHeight() || oW != this.config.getChunkWidth()) {
                 if (this.window != null) {
@@ -134,6 +142,12 @@ public class Main {
             }
             if (oSideViewAngle != this.config.getSideViewAngle()) {
                 this.tracker.setSideViewAngle(this.config.getSideViewAngle());
+            }
+            if (oFrequency != this.config.getFrequency()) {
+                this.tracker.setFrequency(this.config.getFrequency());
+            }
+            if (oGrooveFrequency != this.config.getGrooveFrequency()) {
+                this.tracker.setGrooveFrequency(this.config.getGrooveFrequency());
             }
         }
     }

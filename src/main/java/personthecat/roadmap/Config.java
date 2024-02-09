@@ -264,7 +264,9 @@ public class Config {
                 || this.sideView != tracker.isSideView()
                 || this.mountains != tracker.isMountains()
                 || this.zoom != tracker.getZoom()
-                || this.sideViewAngle != tracker.getSideViewAngle()) {
+                || this.sideViewAngle != tracker.getSideViewAngle()
+                || this.frequency != tracker.getFrequency()
+                || this.grooveFrequency != tracker.getGrooveFrequency()) {
             this.seed = tracker.getSeed();
             this.xOffset = tracker.getXOffset();
             this.yOffset = tracker.getYOffset();
@@ -272,6 +274,8 @@ public class Config {
             this.mountains = tracker.isMountains();
             this.zoom = tracker.getZoom();
             this.sideViewAngle = tracker.getSideViewAngle();
+            this.frequency = tracker.getFrequency();
+            this.grooveFrequency = tracker.getGrooveFrequency();
             this.save();
         }
     }

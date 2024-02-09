@@ -78,7 +78,7 @@ public class HeightmapGenerator {
         return new NoiseDescriptor()
             .noise(this.config.getMapType())
             .range(this.config.getMinY(), this.config.getMaxY())
-            .frequency(this.config.getFrequency())
+            .frequency(this.tracker.getFrequency())
             .seed(this.tracker.getSeed());
     }
 
@@ -86,7 +86,7 @@ public class HeightmapGenerator {
         return new NoiseDescriptor()
             .noise(this.config.getGrooveType())
             .range(-this.config.getGrooveSize(), this.config.getGrooveSize())
-            .frequency(this.config.getGrooveFrequency())
+            .frequency(this.tracker.getGrooveFrequency())
             .fractal(FractalType.FBM)
             .seed(this.tracker.getSeed());
     }

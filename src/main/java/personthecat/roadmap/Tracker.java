@@ -13,6 +13,8 @@ public class Tracker {
     private boolean mountains;
     private float zoom;
     private float sideViewAngle;
+    private float frequency;
+    private float grooveFrequency;
     private final History history = new History();
 
     public Tracker(final Config config) {
@@ -23,6 +25,8 @@ public class Tracker {
         this.mountains = config.isMountains();
         this.zoom = config.getZoom();
         this.sideViewAngle = config.getSideViewAngle();
+        this.frequency = config.getFrequency();
+        this.grooveFrequency = config.getGrooveFrequency();
         this.history.addHistory(this);
     }
 
@@ -148,12 +152,56 @@ public class Tracker {
         this.sideViewAngle = sideViewAngle;
     }
 
-    public void angleUp() {
-        this.sideViewAngle += 0.05;
+    public void angleUp(final int amount) {
+        this.sideViewAngle += amount * 0.05;
     }
 
-    public void angleDown() {
-        this.sideViewAngle -= 0.05;
+    public void angleDown(final int amount) {
+        this.sideViewAngle -= amount * 0.05;
+    }
+
+    public float getFrequency() {
+        return this.frequency;
+    }
+
+    public void setFrequency(final float frequency) {
+        this.frequency = frequency;
+    }
+
+    private void adjustFrequencyAnchored(final Config config, final float inc) {
+        if (this.frequency + inc <= 0 || this.grooveFrequency + inc <= 0) {
+            return;
+        }
+        final float frequency = this.frequency + inc;
+        final int lX = (config.getChunkWidth() << 4) / 2;
+        final int lY = (config.getChunkHeight() << 4) / 2;
+        final int cX = this.xOffset + lX;
+        final int cY = this.yOffset + lY;
+        if (this.frequency == 0) {
+            this.xOffset = (int) ((cX / (double) frequency) - lX);
+            this.yOffset = (int) ((cY / (double) frequency) - lY);
+        } else {
+            this.xOffset = (int) ((cX * (double) this.frequency) / (double) frequency) - lX;
+            this.yOffset = (int) ((cY * (double) this.frequency) / (double) frequency) - lY;
+        }
+        this.frequency = frequency;
+        this.grooveFrequency += inc;
+    }
+
+    public void anchoredFrequencyUp(final Config config, final int amount) {
+        this.adjustFrequencyAnchored(config, amount * 0.000025F);
+    }
+
+    public void anchoredFrequencyDown(final Config config, final int amount) {
+        this.adjustFrequencyAnchored(config, -amount * 0.000025F);
+    }
+
+    public float getGrooveFrequency() {
+        return this.grooveFrequency;
+    }
+
+    public void setGrooveFrequency(final float frequency) {
+        this.grooveFrequency = frequency;
     }
 
     public void reset() {
