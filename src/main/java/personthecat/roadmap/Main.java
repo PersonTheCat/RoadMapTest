@@ -52,6 +52,10 @@ public class Main {
                 this.tracker.toggleSideView();
                 w.render(this.createNextImage(false));
             });
+            window.onKeyPressed(KeyEvent.VK_C, (w, e) -> {
+                this.tracker.recenter();
+                w.render(this.createNextImage(true));
+            });
             window.onKeyPressed(KeyEvent.VK_Z, (w, e) -> {
                 this.tracker.restoreSettings(this.config);
                 w.render(this.createNextImage(true));

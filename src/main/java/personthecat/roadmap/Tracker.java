@@ -76,8 +76,8 @@ public class Tracker {
 
     public void setSeed(final int seed) {
         this.history.jumpToEnd();
-        this.seed = seed;
         this.history.addHistory(this);
+        this.seed = seed;
     }
 
     public void nextSeed(final Random rand) {
@@ -202,6 +202,16 @@ public class Tracker {
 
     public void setGrooveFrequency(final float frequency) {
         this.grooveFrequency = frequency;
+    }
+
+    public void recenter() {
+        if (this.xOffset == 0 && this.yOffset == 0) {
+            return;
+        }
+        this.history.jumpToEnd();
+        this.history.addHistory(this);
+        this.xOffset = 0;
+        this.yOffset = 0;
     }
 
     public void restoreSettings(final Config config) {
