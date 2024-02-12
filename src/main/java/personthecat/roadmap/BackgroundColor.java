@@ -1,50 +1,41 @@
 package personthecat.roadmap;
 
 import java.awt.Color;
-import java.util.Map;
+import java.util.stream.Stream;
 
 public enum BackgroundColor {
-  RED,
-  GREEN,
-  BLUE,
-  WHITE,
-  BLACK,
-  YELLOW,
-  PURPLE,
-  CYAN;
+  RED(Color.RED),
+  GREEN(Color.GREEN),
+  BLUE(Color.BLUE),
+  WHITE(Color.WHITE),
+  BLACK(Color.BLACK),
+  GRAY(Color.GRAY),
+  YELLOW(Color.YELLOW),
+  ORANGE(Color.ORANGE),
+  PINK(Color.PINK),
+  PURPLE(new Color(255, 0, 255)),
+  MAGENTA(Color.MAGENTA),
+  CYAN(Color.CYAN);
 
-  private static final Color PURPLE_COLOR = new Color(255, 0, 255);
+  private final Color color;
 
-  private static final Map<Color, BackgroundColor> INVERSE_MAP =
-      Map.of(
-          Color.RED, RED,
-          Color.GREEN, GREEN,
-          Color.BLUE, BLUE,
-          Color.WHITE, WHITE,
-          Color.BLACK, BLACK,
-          Color.YELLOW, YELLOW,
-          PURPLE_COLOR, PURPLE,
-          Color.CYAN, CYAN);
+  BackgroundColor(final Color color) {
+    this.color = color;
+  }
 
   public static BackgroundColor from(final String color) {
     return valueOf(color.toUpperCase());
   }
 
   public static String format(final Color color) {
-    final var bgColor = INVERSE_MAP.get(color);
-    return bgColor != null ? bgColor.name() : null;
+    return Stream.of(values())
+        .filter(c -> c.color.equals(color))
+        .findFirst()
+        .map(BackgroundColor::name)
+        .orElse(null);
   }
 
   public Color get() {
-    return switch (this) {
-      case RED -> Color.RED;
-      case GREEN -> Color.GREEN;
-      case BLUE -> Color.BLUE;
-      case WHITE -> Color.WHITE;
-      case BLACK -> Color.BLACK;
-      case YELLOW -> Color.YELLOW;
-      case PURPLE -> PURPLE_COLOR;
-      case CYAN -> Color.CYAN;
-    };
+    return this.color;
   }
 }
