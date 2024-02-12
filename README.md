@@ -27,3 +27,4 @@ will regenerate.
 | ctrl + | Angle down (in side view mode)         |
 | alt -  | Anchored frequency down                |
 | alt +  | Anchored frequency up                  |
+| ctrl z | Reset hotkey changes to config         |

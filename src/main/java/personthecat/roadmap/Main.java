@@ -52,6 +52,10 @@ public class Main {
                 this.tracker.toggleSideView();
                 w.render(this.createNextImage(false));
             });
+            window.onKeyPressed(KeyEvent.VK_Z, (w, e) -> {
+                this.tracker.restoreSettings(this.config);
+                w.render(this.createNextImage(true));
+            });
             window.onKeyPressed(new int[] { KeyEvent.VK_EQUALS, KeyEvent.VK_PLUS }, (w, e) -> {
                 final int amount = e.isShiftDown() ? 3 : 1;
                 if (e.isControlDown()) {

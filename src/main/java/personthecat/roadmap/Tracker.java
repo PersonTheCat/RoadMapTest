@@ -204,6 +204,18 @@ public class Tracker {
         this.grooveFrequency = frequency;
     }
 
+    public void restoreSettings(final Config config) {
+        this.xOffset = config.getXOffset();
+        this.yOffset = config.getYOffset();
+        this.seed = config.getSeed();
+        this.sideView = config.isSideView();
+        this.mountains = config.isMountains();
+        this.zoom = config.getZoom();
+        this.sideViewAngle = config.getSideViewAngle();
+        this.frequency = config.getFrequency();
+        this.grooveFrequency = config.getGrooveFrequency();
+    }
+
     public void reset() {
         this.prevXOffset = this.xOffset;
         this.prevYOffset = this.yOffset;
