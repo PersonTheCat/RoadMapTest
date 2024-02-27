@@ -54,6 +54,10 @@ public class Main {
         this.tracker.toggleSideView();
         w.render(this.createNextImage(false));
       });
+      window.onKeyPressed('t', w -> {
+        this.tracker.toggleRoads();
+        w.render(this.createNextImage(this.tracker.isEnableRoads()));
+      });
       window.onKeyPressed(KeyEvent.VK_C, (w, e) -> {
         this.tracker.recenter();
         w.render(this.createNextImage(true));
@@ -132,6 +136,7 @@ public class Main {
       if (config.terrainFeaturesUpdated()) {
         System.out.println("Terrain features updated. Deleting old roads...");
         RoadRegion.deleteAllRegions();
+        this.generator.getRoadMap().clearCache();
       }
       if (oH != this.config.getChunkHeight() || oW != this.config.getChunkWidth()) {
         if (this.window != null) {

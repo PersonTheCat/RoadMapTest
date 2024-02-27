@@ -46,6 +46,7 @@ public class Config {
   private float roadChance = 1.0F / 10000.0F;
   private boolean sideView = false;
   private boolean mountains = true;
+  private boolean enableRoads = true;
   private boolean highlightRoadEndpoints = false;
   private NoiseType mapType = NoiseType.SIMPLEX2S;
   private NoiseType grooveType = NoiseType.PERLIN;
@@ -157,6 +158,10 @@ public class Config {
 
   public boolean isMountains() {
     return this.mountains;
+  }
+
+  public boolean isEnableRoads() {
+    return this.enableRoads;
   }
 
   public boolean isHighlightRoadEndpoints() {
@@ -315,6 +320,7 @@ public class Config {
         .get(() -> this.mountains)
         .set(b -> this.mountains = b);
     this.getBoolean(json, "sideView").set(b -> this.sideView = b);
+    this.getBoolean(json, "enableRoads").set(b -> this.enableRoads = b);
     this.getBoolean(json, "highlightRoadEndpoints").set(b -> this.highlightRoadEndpoints = b);
     this.getEnum(json, "mapType", NoiseType.class, NoiseType::from)
         .changesTerrainFeatures()
@@ -362,6 +368,7 @@ public class Config {
         || this.yOffset != tracker.getYOffset()
         || this.sideView != tracker.isSideView()
         || this.mountains != tracker.isMountains()
+        || this.enableRoads != tracker.isEnableRoads()
         || this.zoom != tracker.getZoom()
         || this.sideViewAngle != tracker.getSideViewAngle()
         || this.frequency != tracker.getFrequency()
@@ -371,6 +378,7 @@ public class Config {
       this.yOffset = tracker.getYOffset();
       this.sideView = tracker.isSideView();
       this.mountains = tracker.isMountains();
+      this.enableRoads = tracker.isEnableRoads();
       this.zoom = tracker.getZoom();
       this.sideViewAngle = tracker.getSideViewAngle();
       this.frequency = tracker.getFrequency();
@@ -410,6 +418,7 @@ public class Config {
         .add("roadChance", this.roadChance, "The chance of a road origin spawning in any given chunk.")
         .add("mountains", this.mountains, "Whether to enable mountainous terrain scaling.")
         .add("sideView", this.sideView, "Whether to display the terrain in side view mode.")
+        .add("enableRoads", this.enableRoads, "Whether to generate and display roads on the map")
         .add("highlightRoadEndpoints", this.highlightRoadEndpoints, "Debug option to clearly show where road endpoints are.")
         .add("mapType", this.mapType.format(), "The type of noise to generate for the primary map.")
         .add("grooveType", this.grooveType.format(), "The type of noise to generate for the grooves.")

@@ -61,4 +61,9 @@ public class RoadMap {
   private RoadRegion cacheRegion(final RoadRegion r) {
     return this.regionCache[this.regionCache.length - 1] = r;
   }
+
+  public void clearCache() {
+    Arrays.fill(this.regionCache, null);
+    System.out.println("Cleaned region cache for seed: " + this.seed);
+  }
 }

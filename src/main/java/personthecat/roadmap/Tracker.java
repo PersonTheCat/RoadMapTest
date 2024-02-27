@@ -10,6 +10,7 @@ public class Tracker {
   private int seed;
   private boolean sideView;
   private boolean mountains;
+  private boolean enableRoads;
   private float zoom;
   private float sideViewAngle;
   private float frequency;
@@ -22,6 +23,7 @@ public class Tracker {
     this.yOffset = config.getYOffset();
     this.sideView = config.isSideView();
     this.mountains = config.isMountains();
+    this.enableRoads = config.isEnableRoads();
     this.zoom = config.getZoom();
     this.sideViewAngle = config.getSideViewAngle();
     this.frequency = config.getFrequency();
@@ -127,6 +129,18 @@ public class Tracker {
     this.mountains = !this.mountains;
   }
 
+  public boolean isEnableRoads() {
+    return this.enableRoads;
+  }
+
+  public void setEnableRoads(final boolean enableRoads) {
+    this.enableRoads = enableRoads;
+  }
+
+  public void toggleRoads() {
+    this.enableRoads = !this.enableRoads;
+  }
+
   public float getZoom() {
     return this.zoom;
   }
@@ -219,6 +233,7 @@ public class Tracker {
     this.seed = config.getSeed();
     this.sideView = config.isSideView();
     this.mountains = config.isMountains();
+    this.enableRoads = config.isEnableRoads();
     this.zoom = config.getZoom();
     this.sideViewAngle = config.getSideViewAngle();
     this.frequency = config.getFrequency();

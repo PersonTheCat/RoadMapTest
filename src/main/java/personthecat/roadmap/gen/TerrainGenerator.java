@@ -172,4 +172,8 @@ public class TerrainGenerator {
   private int cap(final int channel) {
     return Math.max(0, Math.min(255, channel));
   }
+
+  public RoadMap getRoadMap() {
+    return this.roadGenerator.getRoadMap();
+  }
 }

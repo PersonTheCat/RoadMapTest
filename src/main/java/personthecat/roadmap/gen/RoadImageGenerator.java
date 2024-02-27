@@ -27,10 +27,12 @@ public class RoadImageGenerator {
 
   public BufferedImage getRoadOverlay(final int h, final int w, final boolean reload) {
     final BufferedImage overlay = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-    if (this.prevImage == null || reload) {
-      this.writeNewImage(overlay);
-    } else {
-      this.writePartialImage(overlay);
+    if (this.tracker.isEnableRoads()) {
+      if (this.prevImage == null || reload) {
+        this.writeNewImage(overlay);
+      } else {
+        this.writePartialImage(overlay);
+      }
     }
     this.prevImage = overlay;
     return overlay;
@@ -149,5 +151,9 @@ public class RoadImageGenerator {
         }
       }
     }
+  }
+
+  public RoadMap getRoadMap() {
+    return this.roadMap;
   }
 }
