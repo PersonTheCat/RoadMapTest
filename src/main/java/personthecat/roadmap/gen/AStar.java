@@ -98,7 +98,7 @@ public class AStar {
     final float sH = this.gen.sample(pX, pY);
     final float eH = this.gen.sample(x, y);
     final float dH =  Math.abs(sH - eH);
-    if (!this.isClosed(x, y) && eH >= 0 && dH < 3) {
+    if (!this.isClosed(x, y) && eH >= 0 && dH < 2) {
       final Cell cell = this.getDetails(x, y);
       final double gNew = getG(cell) + d;
       final double hNew = calculateHValue(x, y, dest);
