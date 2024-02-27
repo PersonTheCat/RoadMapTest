@@ -1,4 +1,4 @@
-package personthecat.roadmap;
+package personthecat.roadmap.gen;
 
 @SuppressWarnings("ClassCanBeRecord")
 public class Point {

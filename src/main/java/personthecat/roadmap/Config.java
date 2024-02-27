@@ -1,6 +1,7 @@
 package personthecat.roadmap;
 
 import personthecat.fastnoise.data.NoiseType;
+import personthecat.roadmap.gen.Road;
 import xjs.comments.CommentType;
 import xjs.core.Json;
 import xjs.core.JsonObject;

@@ -1,4 +1,6 @@
-package personthecat.roadmap;
+package personthecat.roadmap.gen;
+
+import personthecat.roadmap.Config;
 
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -150,5 +152,25 @@ public class AStar {
   protected static double calculateHValue(final int x, final int y, final Point dest) {
     final double d = Math.sqrt((x - dest.x) * (x - dest.x) + (y - dest.y) * (y - dest.y));
     return Math.sin(x * y) * 5 + d;
+  }
+
+  private static class Cell {
+    int pX;
+    int pY;
+    double f;
+    double g;
+    double h;
+
+    Cell() {
+      this(0, 0, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
+    }
+
+    Cell(final int pX, final int pY, final double f, final double g, final double h) {
+      this.pX = pX;
+      this.pY = pY;
+      this.f = f;
+      this.g = g;
+      this.h = h;
+    }
   }
 }

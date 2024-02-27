@@ -1,4 +1,4 @@
-package personthecat.roadmap;
+package personthecat.roadmap.io;
 
 import java.io.BufferedOutputStream;
 import java.io.Closeable;
@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 
 public class ByteWriter implements Closeable {
   private final OutputStream os;

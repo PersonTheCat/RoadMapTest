@@ -1,5 +1,7 @@
 package personthecat.roadmap;
 
+import personthecat.roadmap.gen.RoadRegion;
+import personthecat.roadmap.gen.TerrainGenerator;
 import xjs.serialization.JsonContext;
 import xjs.serialization.writer.JsonWriterOptions;
 

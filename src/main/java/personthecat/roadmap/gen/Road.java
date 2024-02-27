@@ -1,4 +1,7 @@
-package personthecat.roadmap;
+package personthecat.roadmap.gen;
+
+import personthecat.roadmap.io.ByteReader;
+import personthecat.roadmap.io.ByteWriter;
 
 import java.io.IOException;
 

@@ -1,6 +1,8 @@
-package personthecat.roadmap;
+package personthecat.roadmap.gen;
 
 import org.apache.commons.io.FileUtils;
+import personthecat.roadmap.io.ByteReader;
+import personthecat.roadmap.io.ByteWriter;
 
 import java.io.File;
 import java.io.FileNotFoundException;

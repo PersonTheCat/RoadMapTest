@@ -1,4 +1,4 @@
-package personthecat.roadmap;
+package personthecat.roadmap.io;
 
 import java.io.BufferedInputStream;
 import java.io.Closeable;

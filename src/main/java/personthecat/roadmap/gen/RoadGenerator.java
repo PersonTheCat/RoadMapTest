@@ -1,4 +1,8 @@
-package personthecat.roadmap;
+package personthecat.roadmap.gen;
+
+import personthecat.roadmap.Config;
+import personthecat.roadmap.Tracker;
+import personthecat.roadmap.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
