@@ -9,9 +9,6 @@ import java.awt.image.BufferedImage;
 import java.util.Random;
 
 public class RoadImageGenerator {
-  // assume a road will not deviate > 64 blocks from its corners
-  private static final int DRAW_PADDING = 64;
-
   private final Config config;
   private final Tracker tracker;
   private final RoadMap roadMap;
@@ -49,7 +46,7 @@ public class RoadImageGenerator {
     // absolute chunks
     for (int cX = cXO; cX < cXO + this.config.getChunkWidth(); cX++) {
       for (int cY = cYO; cY < cYO + this.config.getChunkHeight(); cY++) {
-        rand.setSeed(31 * (seed + cX) + cY);
+        Utils.setFeatureSeed(rand, seed, cX, cY);
         this.generateChunk(image, cX, cY, rand);
       }
     }
@@ -87,7 +84,7 @@ public class RoadImageGenerator {
     final short rY = RoadRegion.getRegionCoord(aY);
     final RoadRegion region = this.roadMap.getRegion(this.mapGen, rX, rY);
     for (final Road road : region.getData()) {
-      if (!isInsideRoad(road, rX, rY, aX, aY)) {
+      if (!road.containsPoint(rX, rY, aX, aY)) {
         continue;
       }
       for (final RoadVertex vertex : road.vertices()) {
@@ -113,19 +110,6 @@ public class RoadImageGenerator {
         image.setRGB(aCX + x, aCY + y, src.getRGB(aCXO + x, aCYO + y));
       }
     }
-  }
-
-  private static boolean isInsideRoad(final Road road, final int rX, final int rY, final int aX, final int aY) {
-    final int aRX = RoadRegion.getAbsoluteCoord(rX);
-    final int aRY = RoadRegion.getAbsoluteCoord(rY);
-    final int x1 = aRX + road.minX();
-    final int y1 = aRY + road.minY();
-    final int x2 = aRX + road.maxX();
-    final int y2 = aRY + road.maxY();
-    return aX > x1 - DRAW_PADDING
-        && aX < x2 + DRAW_PADDING
-        && aY > y1 - DRAW_PADDING
-        && aY < y2 + DRAW_PADDING;
   }
 
   private static double distance(final int x1, final int y1, final int x2, final int y2) {

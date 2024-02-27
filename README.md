@@ -15,6 +15,7 @@ will regenerate.
 | r      | Reload the config and update the image |
 | m      | Toggle mountains on and off            |
 | s      | Toggle side view mode                  |
+| t      | Toggle generating and displaying roads |
 | ctrl s | Save settings                          |
 | up     | Move the image up by one chunk         |
 | down   | Move the image down by one chunk       |

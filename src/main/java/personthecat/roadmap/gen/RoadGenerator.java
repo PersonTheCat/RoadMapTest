@@ -11,7 +11,7 @@ import java.util.Random;
 public abstract class RoadGenerator {
   protected static final int SCAN_RADIUS = 16;
   protected static final int SCAN_STEP = Road.STEP;
-  protected static final int SCAN_PAD = (Road.MAX_LENGTH - SCAN_RADIUS) >> 4;
+  protected static final int SCAN_PAD = (Road.MAX_DISTANCE - SCAN_RADIUS) >> 4;
   protected static final float TAU = (float) (Math.PI * 2);
 
   protected final Config config;
@@ -92,7 +92,7 @@ public abstract class RoadGenerator {
     final Point dest = this.getDest(gen, src, rand);
     if (dest != null) {
       final Road road = this.trace(gen, src, dest, x, y);
-      if (road != null) {
+      if (road != null && road.isInRegionBounds()) {
 //        System.out.println("generated road: " + src + " -> " + dest);
         roads.add(road);
       }

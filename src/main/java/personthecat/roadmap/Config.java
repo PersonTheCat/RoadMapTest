@@ -35,8 +35,8 @@ public class Config {
   private int yOffset = 0;
   private int minRoadStart = 20;
   private int maxRoadStart = 40;
-  private int minRoadLength = Road.MAX_LENGTH / 4;
-  private int maxRoadLength = Road.MAX_LENGTH;
+  private int minRoadLength = Road.MAX_DISTANCE / 4;
+  private int maxRoadLength = Road.MAX_DISTANCE;
   private int shorelineCutoff = 20;
   private float frequency = 0.0025F;
   private float grooveFrequency = 0.02F;
@@ -267,14 +267,14 @@ public class Config {
         .set(i -> this.maxRoadStart = i);
     this.getInt(json, "minRoadLength")
         .changesTerrainFeatures()
-        .filter(i -> i >= 0 && i <= Road.MAX_LENGTH)
-        .error("Must be 0 ~ " + Road.MAX_LENGTH)
+        .filter(i -> i >= 0 && i <= Road.MAX_DISTANCE)
+        .error("Must be 0 ~ " + Road.MAX_DISTANCE)
         .get(() -> this.minRoadLength)
         .set(i -> this.minRoadLength = i);
     this.getInt(json, "maxRoadLength")
         .changesTerrainFeatures()
-        .filter(i -> i >= 0 && i <= Road.MAX_LENGTH)
-        .error("Must be 0 ~ " + Road.MAX_LENGTH)
+        .filter(i -> i >= 0 && i <= Road.MAX_DISTANCE)
+        .error("Must be 0 ~ " + Road.MAX_DISTANCE)
         .get(() -> this.maxRoadLength)
         .set(i -> this.maxRoadLength = i);
     this.getInt(json, "shorelineCutoff")

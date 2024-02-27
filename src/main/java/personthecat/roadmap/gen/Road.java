@@ -6,8 +6,24 @@ import personthecat.roadmap.io.ByteWriter;
 import java.io.IOException;
 
 public record Road(byte level, short minX, short minY, short maxX, short maxY, RoadVertex[] vertices) {
-  public static final int MAX_LENGTH = RoadRegion.LEN / 2;
+  public static final int MAX_DISTANCE = RoadRegion.LEN / 2;
+  public static final int MAX_LENGTH = RoadRegion.LEN;
   public static final int STEP = 2;
+  private static final int PADDING = 32; // assume vertices will never exit these bounds
+
+  public boolean containsPoint(final short rX, final short rY, final int aX, final int aY) {
+    final int aRX = RoadRegion.getAbsoluteCoord(rX);
+    final int aRY = RoadRegion.getAbsoluteCoord(rY);
+    final int x1 = aRX + this.minX;
+    final int y1 = aRY + this.minY;
+    final int x2 = aRX + this.maxX;
+    final int y2 = aRY + this.maxY;
+    return aX > x1 - PADDING && aX < x2 + PADDING && aY > y1 - PADDING && aY < y2 + PADDING;
+  }
+
+  public boolean isInRegionBounds() {
+    return this.minX >= 0 || this.maxX < RoadRegion.LEN || this.minY >= 0 || this.maxY < RoadRegion.LEN;
+  }
 
   public static Road fromReader(final ByteReader br) throws IOException {
     final byte level = br.read();

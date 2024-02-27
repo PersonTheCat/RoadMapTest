@@ -20,7 +20,7 @@ public class AStar {
   public AStar(final Config config) {
     this.openList = new TreeMap<>();
     this.closedSet = new BitSet(RoadRegion.LEN / 2 * RoadRegion.LEN / 2);
-    this.cellDetails = new HashMap<>(Road.MAX_LENGTH);
+    this.cellDetails = new HashMap<>(Road.MAX_DISTANCE);
     this.config = config;
   }
 
@@ -38,7 +38,8 @@ public class AStar {
     this.setDetails(x, y, new Cell(x, y, 0, 0, 0));
     this.open(0.0, x, y);
 
-    while (this.hasNext()) {
+    int len = 0;
+    while (this.hasNext() && len++ < Road.MAX_LENGTH) {
       final Point p = this.next();
       x = p.x;
       y = p.y;
