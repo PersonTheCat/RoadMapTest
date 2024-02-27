@@ -89,16 +89,16 @@ public class Main {
             window.onKeyPressed(new int[] { KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_RIGHT, KeyEvent.VK_LEFT }, (w, e, ks) -> {
                 final int speed = e.isShiftDown() ? this.config.getScrollAmount() : 1;
                 if (ks.test(KeyEvent.VK_UP)) {
-                    this.generator.up(speed);
+                    this.tracker.up(speed);
                 }
                 if (ks.test(KeyEvent.VK_DOWN)) {
-                    this.generator.down(speed);
+                    this.tracker.down(speed);
                 }
                 if (ks.test(KeyEvent.VK_LEFT)) {
-                    this.generator.left(speed);
+                    this.tracker.left(speed);
                 }
                 if (ks.test(KeyEvent.VK_RIGHT)) {
-                    this.generator.right(speed);
+                    this.tracker.right(speed);
                 }
                 w.render(this.createNextImage(false));
             });
@@ -109,7 +109,9 @@ public class Main {
             if (reload) {
                 this.generator.reload();
             }
-            return this.generator.generate(reload);
+            final BufferedImage image = this.generator.generate(reload);
+            this.tracker.reset();
+            return image;
         }
 
         void reloadConfig() {
@@ -125,6 +127,10 @@ public class Main {
             final float oFrequency = this.config.getFrequency();
             final float oGrooveFrequency = this.config.getGrooveFrequency();
             this.config.reloadFromDisk();
+            if (config.terrainFeaturesUpdated()) {
+                System.out.println("Terrain features updated. Deleting old roads...");
+                RoadRegion.deleteAllRegions();
+            }
             if (oH != this.config.getChunkHeight() || oW != this.config.getChunkWidth()) {
                 if (this.window != null) {
                     this.window.pack();

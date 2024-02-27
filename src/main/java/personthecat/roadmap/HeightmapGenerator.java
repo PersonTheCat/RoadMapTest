@@ -9,6 +9,8 @@ public class HeightmapGenerator {
     private final Tracker tracker;
     private FastNoise generator;
     private float[][] prevMap;
+    private int h;
+    private int w;
 
     public HeightmapGenerator(final Config config, final Tracker tracker) {
         this.config = config;
@@ -21,8 +23,20 @@ public class HeightmapGenerator {
     }
 
     public float sample(final int x, final int y) {
-        final float n =
-            this.generator.getNoiseScaled(x + this.tracker.getXOffset(), y + this.tracker.getYOffset());
+        if (this.isInBounds(x, y)) {
+            return this.prevMap[x - this.tracker.getXOffset()][y - this.tracker.getYOffset()];
+        }
+        return this.getNoise(x, y);
+    }
+
+    private boolean isInBounds(final int x, final int y) {
+        final int xO = this.tracker.getXOffset();
+        final int yO = this.tracker.getYOffset();
+        return x >= xO && x < (xO + this.w) && y >= yO && y < (yO + this.h);
+    }
+
+    private float getNoise(final int x, final int y) {
+        final float n = this.generator.getNoiseScaled(x, y);
         return n > 0 ? n * this.config.getSurfaceScale() : n;
     }
 
@@ -33,22 +47,27 @@ public class HeightmapGenerator {
         } else {
             this.writePartialMap(map);
         }
-        this.tracker.reset();
         this.prevMap = map;
+        this.h = h;
+        this.w = w;
         return map;
     }
 
     private void writeNewMap(final float[][] map) {
+        final int xOffset = this.tracker.getXOffset();
+        final int yOffset = this.tracker.getYOffset();
         for (int x = 0; x < map.length; x++) {
             for (int y = 0; y < map[0].length; y++) {
-                map[x][y] = this.sample(x, y);
+                map[x][y] = this.getNoise(x + xOffset, y + yOffset);
             }
         }
     }
 
     private void writePartialMap(final float[][] map) {
-        final int xD = this.tracker.getXOffset() - this.tracker.getPrevXOffset();
-        final int yD = this.tracker.getYOffset() - this.tracker.getPrevYOffset();
+        final int xOffset = this.tracker.getXOffset();
+        final int yOffset = this.tracker.getYOffset();
+        final int xD = xOffset - this.tracker.getPrevXOffset();
+        final int yD = yOffset - this.tracker.getPrevYOffset();
 
         for (int x = 0; x < map.length; x++) {
             final int xO = x + xD;
@@ -57,7 +76,7 @@ public class HeightmapGenerator {
                 if (xO >= 0 && xO < map.length && yO >= 0 && yO < map[0].length) {
                     map[x][y] = this.prevMap[xO][yO];
                 } else {
-                    map[x][y] = this.sample(x, y);
+                    map[x][y] = this.getNoise(x + xOffset, y + yOffset);
                 }
             }
         }

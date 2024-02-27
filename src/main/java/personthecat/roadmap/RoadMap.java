@@ -1,26 +1,61 @@
 package personthecat.roadmap;
 
-import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import java.util.Arrays;
 
 public class RoadMap {
+  private static final int CACHE_SIZE = 12; // will use 4 for MC
+  private final RoadRegion[] regionCache = new RoadRegion[CACHE_SIZE];
+  private final RoadGenerator generator;
+  private final Tracker tracker;
+  private int seed;
 
-    // This data structure is far from ideal and will change
-    private final Object2ObjectMap<Point, RoadVertex[]> map = new Object2ObjectOpenHashMap<>();
-    private static final RoadVertex[] EMPTY = new RoadVertex[0];
+  public RoadMap(final Config config, final Tracker tracker) {
+    this.generator = new AStarRoadGenerator(config, tracker);
+    this.tracker = tracker;
+    this.seed = tracker.getSeed();
+  }
 
-    public void put(final Point pos, final RoadVertex... vertices) {
-        this.map.compute(pos, (p, a) -> a == null ? vertices : this.append(a, vertices));
+  public RoadRegion getRegion(final HeightmapGenerator mapGen, final short x, final short y) {
+    RoadRegion r = null;
+    if (this.seed == this.tracker.getSeed()) {
+      r = this.getCachedRegion(x, y);
+    } else {
+      Arrays.fill(this.regionCache, null);
+      this.seed = this.tracker.getSeed();
     }
+    if (r != null) return r;
+    r = this.loadRegionFromDisk(x, y);
+    if (r != null) return this.cacheRegion(r);
+    return this.cacheRegion(this.generateRegion(mapGen, x, y));
+  }
 
-    private RoadVertex[] append(final RoadVertex[] a1, final RoadVertex[] a2) {
-        final RoadVertex[] out = new RoadVertex[a1.length + a2.length];
-        System.arraycopy(a1, 0, out, 0, a1.length);
-        System.arraycopy(a2, 0, out, a1.length, a2.length);
-        return out;
+  private RoadRegion getCachedRegion(final short x, final short y) {
+    for (int i = 0; i < this.regionCache.length; i++) {
+      final RoadRegion r = this.regionCache[i];
+      if (r != null && r.x == x && r.y == y) {
+        if (i > 0) {
+          final RoadRegion up = this.regionCache[i - 1];
+          this.regionCache[i] = up;
+          this.regionCache[i - 1] = r;
+        }
+        return r;
+      }
     }
+    return null;
+  }
 
-    public RoadVertex[] get(final int x, final int y) {
-        return this.map.getOrDefault(new Point(x, y), EMPTY);
-    }
+  private RoadRegion loadRegionFromDisk(final short x, final short y) {
+    return RoadRegion.loadFromDisk(this.tracker.getSeed(), x, y);
+  }
+
+  private RoadRegion generateRegion(final HeightmapGenerator mapGen, final short x, final short y) {
+    final Road[] map = this.generator.generateMap(mapGen, x, y).toArray(new Road[0]);
+    final RoadRegion region = new RoadRegion(x, y, map);
+    region.saveToDisk(this.seed);
+    return region;
+  }
+
+  private RoadRegion cacheRegion(final RoadRegion r) {
+    return this.regionCache[this.regionCache.length - 1] = r;
+  }
 }

@@ -17,6 +17,7 @@ dependencies {
     implementation group: 'com.personthecat', name: 'fastnoise', version: '0.9'
     implementation group: 'org.exjson', name: 'xjs-core', version: '0.37'
     implementation group: 'it.unimi.dsi', name: 'fastutil', version: '8.2.1'
+    implementation group: 'commons-io', name: 'commons-io', version: '2.15.1'
     compileOnly group: 'org.jetbrains', name: 'annotations', version: '16.0.2'
 
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.8.1'

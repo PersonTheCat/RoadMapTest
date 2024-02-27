@@ -5,12 +5,10 @@ import java.awt.image.BufferedImage;
 import java.util.Random;
 
 public class TerrainGenerator {
-
-    private static final int SIDE_VIEW_HALF = 512;
     private static final int MIN_COLOR_VALUE = 1;
 
     private final HeightmapGenerator mapGenerator;
-    private final RoadMapGenerator roadGenerator;
+    private final RoadImageGenerator roadGenerator;
     private final Config config;
     private final Tracker tracker;
     private final Random rand;
@@ -20,7 +18,7 @@ public class TerrainGenerator {
     public TerrainGenerator(final Tracker tracker, final Config config) {
         this.tracker = tracker;
         this.mapGenerator = new HeightmapGenerator(config, this.tracker);
-        this.roadGenerator = new RoadMapGenerator(config, this.tracker, this.mapGenerator);
+        this.roadGenerator = new RoadImageGenerator(config, this.tracker, this.mapGenerator);
         this.config = config;
         this.rand = new Random();
     }
@@ -39,22 +37,6 @@ public class TerrainGenerator {
         this.mapGenerator.reload();
     }
 
-    public void up(final int count) {
-        this.tracker.up(count);
-    }
-
-    public void down(final int count) {
-        this.tracker.down(count);
-    }
-
-    public void left(final int count) {
-        this.tracker.left(count);
-    }
-
-    public void right(final int count) {
-        this.tracker.right(count);
-    }
-
     public BufferedImage getBuffer() {
         return this.buffer;
     }
@@ -63,12 +45,13 @@ public class TerrainGenerator {
         final int w = this.config.getChunkWidth() << 4;
         final int h = this.config.getChunkHeight() << 4;
         final float[][] map = this.mapGenerator.generate(h, w, reload);
+        final BufferedImage overlay = this.roadGenerator.getRoadOverlay(h, w, reload);
         if (this.tracker.isSideView()) {
             this.resetBuffer(h, w, reload, true);
-            this.drawSideView(map, this.buffer);
+            this.drawSideView(map, this.buffer, overlay);
         } else {
             this.resetBuffer(h, w, reload, false);
-            this.drawMap(map, this.buffer);
+            this.drawMap(map, this.buffer, overlay);
         }
         return this.buffer;
     }
@@ -83,21 +66,22 @@ public class TerrainGenerator {
         }
     }
 
-    private void drawSideView(final float[][] map, final BufferedImage image) {
-        final int cY = map[0].length / 2;
+    private void drawSideView(final float[][] map, final BufferedImage image, final BufferedImage overlay) {
         int o = 0;
-        for (int y = cY + SIDE_VIEW_HALF - 1; y >= cY - SIDE_VIEW_HALF; y--) {
-            this.drawSlice(image, map, y, o++);
+        for (int y = map[0].length - 1; y >= 0; y--) {
+            this.drawSlice(image, map, y, o++, overlay);
         }
         this.drawBackground(image);
     }
 
-    private void drawSlice(final BufferedImage image, final float[][] map, final int y, final int o) {
+    private void drawSlice(
+            final BufferedImage image, final float[][] map, final int y, final int o, final BufferedImage overlay) {
         for (int x = 0; x < map.length; x++) {
             final int n = (int) map[x][y];
             final int a = n + (int) ((double) o * this.tracker.getSideViewAngle());
-            final Color base = this.getColor(n);
-            final int c = this.darken(base.getRGB(), o / 32);
+            final int r = overlay.getRGB(x, y);
+            final int base = r == 0 ? this.getColor(n).getRGB() : r;
+            final int c = this.darken(base, o / 32);
             for (int h = Math.min(a, map[0].length - 1); h >= 0; h--) {
                 if (image.getRGB(x, map[0].length - h - 1) != 0) {
                     break;
@@ -119,10 +103,21 @@ public class TerrainGenerator {
         }
     }
 
-    private void drawMap(final float[][] map, final BufferedImage image) {
+    private void drawMap(final float[][] map, final BufferedImage image, final BufferedImage overlay) {
         this.colorize(map, image);
-        this.roadGenerator.placeRoads(image, this.rand);
+        this.drawOverlay(image, overlay);
         this.drawGridLines(image);
+    }
+
+    private void drawOverlay(final BufferedImage image, final BufferedImage overlay) {
+        for (int x = 0; x < image.getWidth(); x++) {
+            for (int y = 0; y < image.getHeight(); y++) {
+                final int c = overlay.getRGB(x, y);
+                if (c != 0) {
+                    image.setRGB(x, y, c);
+                }
+            }
+        }
     }
 
     private void colorize(final float[][] map, final BufferedImage image) {
