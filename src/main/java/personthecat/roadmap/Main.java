@@ -37,7 +37,7 @@ public class Main {
         this.generator.previous();
         w.render(this.createNextImage(true));
       });
-      window.onKeyPressed('r', w -> {
+      window.onKeyPressed(KeyEvent.VK_F5, w -> {
         this.reloadConfig();
         w.render(this.createNextImage(true));
       });
@@ -54,7 +54,7 @@ public class Main {
         this.tracker.toggleSideView();
         w.render(this.createNextImage(false));
       });
-      window.onKeyPressed('t', w -> {
+      window.onKeyPressed('r', w -> {
         this.tracker.toggleRoads();
         w.render(this.createNextImage(this.tracker.isEnableRoads()));
       });
