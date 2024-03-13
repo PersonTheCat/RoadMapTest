@@ -23,7 +23,7 @@ public class Config {
   private final File file;
   private int chunkHeight = 64;
   private int chunkWidth = 64;
-  private int grooveSize = 15;
+  private int grooveSize = 50;
   private int minY = -50;
   private int maxY = 96;
   private int resolution = 4;
@@ -42,7 +42,7 @@ public class Config {
   private float surfaceScale = 0.6F;
   private float sideViewAngle = 0.8F;
   private float zoom = 1.25F;
-  private float roadChance = 1.0F / 10000.0F;
+  private float roadChance = 1.0F / 5000.0F;
   private boolean sideView = false;
   private boolean mountains = true;
   private boolean enableRoads = true;
