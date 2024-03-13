@@ -9,11 +9,13 @@ public class RoadMap {
   private static final int CACHE_SIZE = 12; // will use 4 for MC
   private final RoadRegion[] regionCache = new RoadRegion[CACHE_SIZE];
   private final RoadGenerator generator;
+  private final Config config;
   private final Tracker tracker;
   private int seed;
 
   public RoadMap(final Config config, final Tracker tracker) {
     this.generator = new AStarRoadGenerator(config, tracker);
+    this.config = config;
     this.tracker = tracker;
     this.seed = tracker.getSeed();
   }
@@ -54,7 +56,9 @@ public class RoadMap {
   private RoadRegion generateRegion(final HeightmapGenerator mapGen, final short x, final short y) {
     final Road[] map = this.generator.generateMap(mapGen, x, y).toArray(new Road[0]);
     final RoadRegion region = new RoadRegion(x, y, map);
-    region.saveToDisk(this.seed);
+    if (this.config.isPersistRoads()) {
+      region.saveToDisk(this.seed);
+    }
     return region;
   }
 

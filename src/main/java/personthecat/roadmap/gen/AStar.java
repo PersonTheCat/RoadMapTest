@@ -1,6 +1,7 @@
 package personthecat.roadmap.gen;
 
 import personthecat.roadmap.Config;
+import personthecat.roadmap.Utils;
 
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -103,10 +104,15 @@ public class AStar {
       final Cell cell = this.getDetails(x, y);
       final double gNew = getG(cell) + d;
       final double hNew = calculateHValue(x, y, dest);
-      double fNew = gNew + hNew + (dH * dH) * 2;
-      final int cutoff = this.config.getShorelineCutoff();
-      if (eH < cutoff) {
-        fNew += (cutoff - eH) * (cutoff - eH);
+      final double r = getCurve(x, y);
+      final double sd = Utils.stdDev(this.getSamples(x, y, eH));
+      double fNew = gNew + hNew + r + (dH * dH) * 3 + sd * 2;
+      final int minCutoff = this.config.getShorelineCutoff();
+      final int maxCutoff = this.config.getMountainCutoff();
+      if (eH < minCutoff) {
+        fNew += (minCutoff - eH) * (minCutoff - eH);
+      } else if (eH > maxCutoff) {
+        fNew += (eH - maxCutoff) * (eH - maxCutoff);
       }
       if (cell == null || cell.f == Double.POSITIVE_INFINITY || cell.f > fNew) {
         this.open(fNew, x, y);
@@ -124,6 +130,16 @@ public class AStar {
     }
     cell.pX = pX;
     cell.pY = pY;
+  }
+
+  protected double[] getSamples(final int x, final int y, final double c) {
+    return new double[] {
+      c,
+      this.gen.sample(x + 2, y),
+      this.gen.sample(x, y + 2),
+      this.gen.sample(x - 2, y),
+      this.gen.sample(x, y - 2),
+    };
   }
 
   protected List<Point> tracePath(final Point dest) {
@@ -151,8 +167,11 @@ public class AStar {
   }
 
   protected static double calculateHValue(final int x, final int y, final Point dest) {
-    final double d = Math.sqrt((x - dest.x) * (x - dest.x) + (y - dest.y) * (y - dest.y));
-    return Math.sin(x * y) * 5 + d;
+    return Math.sqrt((x - dest.x) * (x - dest.x) + (y - dest.y) * (y - dest.y));
+  }
+
+  protected static double getCurve(final int x, final int y) { // will take: dest, h
+    return Math.sin(x * y);
   }
 
   private static class Cell {

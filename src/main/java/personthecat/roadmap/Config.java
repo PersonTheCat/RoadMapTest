@@ -33,11 +33,10 @@ public class Config {
   private int seed = 0;
   private int xOffset = 0;
   private int yOffset = 0;
-  private int minRoadStart = 20;
-  private int maxRoadStart = 40;
   private int minRoadLength = Road.MAX_DISTANCE / 4;
   private int maxRoadLength = Road.MAX_DISTANCE;
   private int shorelineCutoff = 20;
+  private int mountainCutoff = 40;
   private float frequency = 0.0025F;
   private float grooveFrequency = 0.02F;
   private float surfaceScale = 0.6F;
@@ -47,6 +46,7 @@ public class Config {
   private boolean sideView = false;
   private boolean mountains = true;
   private boolean enableRoads = true;
+  private boolean persistRoads = true;
   private boolean highlightRoadEndpoints = false;
   private NoiseType mapType = NoiseType.SIMPLEX2S;
   private NoiseType grooveType = NoiseType.PERLIN;
@@ -108,14 +108,6 @@ public class Config {
     return this.yOffset;
   }
 
-  public int getMinRoadStart() {
-    return this.minRoadStart;
-  }
-
-  public int getMaxRoadStart() {
-    return this.maxRoadStart;
-  }
-
   public int getMinRoadLength() {
     return this.minRoadLength;
   }
@@ -126,6 +118,10 @@ public class Config {
 
   public int getShorelineCutoff() {
     return this.shorelineCutoff;
+  }
+
+  public int getMountainCutoff() {
+    return this.mountainCutoff;
   }
 
   public float getFrequency() {
@@ -162,6 +158,10 @@ public class Config {
 
   public boolean isEnableRoads() {
     return this.enableRoads;
+  }
+
+  public boolean isPersistRoads() {
+    return this.persistRoads;
   }
 
   public boolean isHighlightRoadEndpoints() {
@@ -253,18 +253,6 @@ public class Config {
     this.getInt(json, "seed").set(i -> this.seed = i);
     this.getInt(json, "xOffset").set(i -> this.xOffset = i);
     this.getInt(json, "yOffset").set(i -> this.yOffset = i);
-    this.getInt(json, "minRoadStart")
-        .changesTerrainFeatures()
-        .filter(i -> i >= this.minY && i <= this.maxY)
-        .error("Must be in height bounds")
-        .get(() -> this.minRoadStart)
-        .set(i -> this.minRoadStart = i);
-    this.getInt(json, "maxRoadStart")
-        .changesTerrainFeatures()
-        .filter(i -> i >= this.minY && i <= this.maxY)
-        .error("Must be in height bounds")
-        .get(() -> this.maxRoadStart)
-        .set(i -> this.maxRoadStart = i);
     this.getInt(json, "minRoadLength")
         .changesTerrainFeatures()
         .filter(i -> i >= 0 && i <= Road.MAX_DISTANCE)
@@ -283,6 +271,12 @@ public class Config {
         .error("Must be in height bounds")
         .get(() -> this.shorelineCutoff)
         .set(i -> this.shorelineCutoff = i);
+    this.getInt(json, "mountainCutoff")
+        .changesTerrainFeatures()
+        .filter(i -> i >= this.minY && i <= this.maxY)
+        .error("Must be in height bounds")
+        .get(() -> this.mountainCutoff)
+        .set(i -> this.mountainCutoff = i);
     this.getFloat(json, "frequency")
         .changesTerrainFeatures()
         .filter(f -> f > 0)
@@ -321,6 +315,7 @@ public class Config {
         .set(b -> this.mountains = b);
     this.getBoolean(json, "sideView").set(b -> this.sideView = b);
     this.getBoolean(json, "enableRoads").set(b -> this.enableRoads = b);
+    this.getBoolean(json, "persistRoads").set(b -> this.persistRoads = b);
     this.getBoolean(json, "highlightRoadEndpoints").set(b -> this.highlightRoadEndpoints = b);
     this.getEnum(json, "mapType", NoiseType.class, NoiseType::from)
         .changesTerrainFeatures()
@@ -405,11 +400,10 @@ public class Config {
         .add("seed", this.seed, "The seed to use for the generated terrain.")
         .add("xOffset", this.xOffset, "The number of blocks to offset the generator on the x-axis.")
         .add("yOffset", this.yOffset, "The number of blocks to offset the generator on the y-axis.")
-        .add("minRoadStart", this.minRoadStart, "Temporary metric to help find a suitable spawn pos.")
-        .add("maxRoadStart", this.maxRoadStart, "Temporary metric to help find a suitable spawn pos.")
         .add("minRoadLength", this.minRoadLength, "The minimum length any road can be.")
         .add("maxRoadLength", this.maxRoadLength, "The maximum length any road can be.")
         .add("shorelineCutoff", this.shorelineCutoff, "The minimum height at which to avoid shorelines")
+        .add("mountainCutoff", this.mountainCutoff, "The minimum height at which to avoid mountains")
         .add("frequency", this.frequency, "Noise frequency for the main noise map.")
         .add("grooveFrequency", this.grooveFrequency, "Frequency for the groove noise.")
         .add("surfaceScale", this.surfaceScale, "The terrain scale when above sea level.")
@@ -419,6 +413,7 @@ public class Config {
         .add("mountains", this.mountains, "Whether to enable mountainous terrain scaling.")
         .add("sideView", this.sideView, "Whether to display the terrain in side view mode.")
         .add("enableRoads", this.enableRoads, "Whether to generate and display roads on the map")
+        .add("persistRoads", this.persistRoads, "Whether to save roads to the disk as they generate")
         .add("highlightRoadEndpoints", this.highlightRoadEndpoints, "Debug option to clearly show where road endpoints are.")
         .add("mapType", this.mapType.format(), "The type of noise to generate for the primary map.")
         .add("grooveType", this.grooveType.format(), "The type of noise to generate for the grooves.")

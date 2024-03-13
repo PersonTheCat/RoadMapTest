@@ -30,18 +30,33 @@ public class AStarRoadGenerator extends RoadGenerator {
     short minY = Short.MAX_VALUE;
     short maxX = Short.MIN_VALUE;
     short maxY = Short.MIN_VALUE;
-    final RoadVertex[] vertices = new RoadVertex[path.size()];
-    for (int i = path.size() - 1; i >= 0; i--) {
+    final int len = path.size();
+    final RoadVertex[] vertices = new RoadVertex[len];
+    for (int i = len - 1; i >= 0; i--) {
       final Point p = path.get(i);
+      final float theta;
+      final float xAngle;
+      if (i > 0 && i < len - 1) {
+        // Check ahead by 2, if possible. Lazy way to get the angle over a large distance
+        final Point prev = i < len - 2 ? path.get(i + 2) : path.get(i + 1);
+        final Point next = i > 1 ? path.get(i - 2) : path.get(0); // i - 1 = 0
+        final float a1 = (float) Math.atan2(p.y - prev.y, p.x - prev.x);
+        final float a2 = (float) Math.atan2(next.y - p.y, next.x - p.x);
+        theta = a2 - a1;
+        xAngle = a2;
+      } else {
+        theta = -1;
+        xAngle = -1;
+      }
       final short relX = (short) (p.x - RoadRegion.getAbsoluteCoord(x));
       final short relY = (short) (p.y - RoadRegion.getAbsoluteCoord(y));
       if (relX < minX) minX = relX;
       if (relY < minY) minY = relY;
       if (relX > maxX) maxX = relX;
       if (relY > maxY) maxY = relY;
-      final RoadVertex v = new RoadVertex(relX, relY, DEMO_RADIUS, DEMO_COLOR, DEMO_INTEGRITY, (short) 0);
+      final RoadVertex v = new RoadVertex(relX, relY, DEMO_RADIUS, DEMO_COLOR, DEMO_INTEGRITY, theta, xAngle, (short) 0);
       vertices[path.size() - i - 1] = v;
-      if (i == path.size() - 1) {
+      if (i == len - 1) {
         v.addFlag(RoadVertex.START);
       } else if (i == 0) {
         v.addFlag(RoadVertex.END);
@@ -49,6 +64,23 @@ public class AStarRoadGenerator extends RoadGenerator {
         v.addFlag(RoadVertex.MIDPOINT);
       }
     }
+    this.smoothAngles(vertices);
     return new Road((byte) 0, minX, minY, maxX, maxY, vertices);
+  }
+
+  private void smoothAngles(final RoadVertex[] vertices) {
+    final int amount = 2;
+//    final float[] angles = new float[vertices.length - amount];
+    for (int i = amount; i < vertices.length - amount; i++) {
+      float sum = 0;
+      for (int s = -amount; s <= amount; s++) {
+        sum += vertices[i + s].theta;
+      }
+//      angles[i - amount] = sum / (amount * 2 + 1);
+      vertices[i].theta = sum / (amount * 2 + 1);
+    }
+//    for (int i = 0; i < angles.length; i++) {
+//      vertices[i + amount].angle = angles[i];
+//    }
   }
 }

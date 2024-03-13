@@ -37,6 +37,14 @@ sourceSets {
     }
 }
 
+jar {
+    manifest {
+        attributes(
+            'Main-Class': 'personthecat.roadmap.Main'
+        )
+    }
+}
+
 test {
     useJUnitPlatform()
 }

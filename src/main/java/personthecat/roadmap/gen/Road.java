@@ -11,6 +11,16 @@ public record Road(byte level, short minX, short minY, short maxX, short maxY, R
   public static final int STEP = 2;
   private static final int PADDING = 32; // assume vertices will never exit these bounds
 
+  public int length() {
+    return this.vertices.length * STEP;
+  }
+
+  public int distance() {
+    return (int) Math.sqrt(
+        (this.minX - this.maxX) * (this.minX - this.maxX)
+            + (this.minY - this.maxY) * (this.minY - this.maxY));
+  }
+
   public boolean containsPoint(final short rX, final short rY, final int aX, final int aY) {
     final int aRX = RoadRegion.getAbsoluteCoord(rX);
     final int aRY = RoadRegion.getAbsoluteCoord(rY);
