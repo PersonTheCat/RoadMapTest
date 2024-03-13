@@ -114,7 +114,7 @@ public class AStar {
       } else if (eH > maxCutoff) {
         fNew += (eH - maxCutoff) * (eH - maxCutoff);
       }
-      if (cell == null || cell.f == Double.POSITIVE_INFINITY || cell.f > fNew) {
+      if (cell == null || cell.f > fNew) {
         this.open(fNew, x, y);
         this.setDetails(x, y, new Cell(pX, pY, fNew, gNew, hNew));
       }
@@ -181,9 +181,7 @@ public class AStar {
     double g;
     double h;
 
-    Cell() {
-      this(0, 0, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
-    }
+    Cell() {}
 
     Cell(final int pX, final int pY, final double f, final double g, final double h) {
       this.pX = pX;

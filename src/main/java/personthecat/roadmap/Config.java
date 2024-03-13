@@ -47,6 +47,7 @@ public class Config {
   private boolean mountains = true;
   private boolean enableRoads = true;
   private boolean persistRoads = true;
+  private boolean pregenRoads = false;
   private boolean highlightRoadEndpoints = false;
   private NoiseType mapType = NoiseType.SIMPLEX2S;
   private NoiseType grooveType = NoiseType.PERLIN;
@@ -162,6 +163,10 @@ public class Config {
 
   public boolean isPersistRoads() {
     return this.persistRoads;
+  }
+
+  public boolean isPregenRoads() {
+    return this.pregenRoads;
   }
 
   public boolean isHighlightRoadEndpoints() {
@@ -316,6 +321,7 @@ public class Config {
     this.getBoolean(json, "sideView").set(b -> this.sideView = b);
     this.getBoolean(json, "enableRoads").set(b -> this.enableRoads = b);
     this.getBoolean(json, "persistRoads").set(b -> this.persistRoads = b);
+    this.getBoolean(json, "pregenRoads").set(b -> this.pregenRoads = b);
     this.getBoolean(json, "highlightRoadEndpoints").set(b -> this.highlightRoadEndpoints = b);
     this.getEnum(json, "mapType", NoiseType.class, NoiseType::from)
         .changesTerrainFeatures()
@@ -412,8 +418,9 @@ public class Config {
         .add("roadChance", this.roadChance, "The chance of a road origin spawning in any given chunk.")
         .add("mountains", this.mountains, "Whether to enable mountainous terrain scaling.")
         .add("sideView", this.sideView, "Whether to display the terrain in side view mode.")
-        .add("enableRoads", this.enableRoads, "Whether to generate and display roads on the map")
-        .add("persistRoads", this.persistRoads, "Whether to save roads to the disk as they generate")
+        .add("enableRoads", this.enableRoads, "Whether to generate and display roads on the map.")
+        .add("persistRoads", this.persistRoads, "Whether to save roads to the disk as they generate.")
+        .add("pregenRoads", this.pregenRoads, "Whether to pre-generate 25 road regions surrounding the current offset on startup.")
         .add("highlightRoadEndpoints", this.highlightRoadEndpoints, "Debug option to clearly show where road endpoints are.")
         .add("mapType", this.mapType.format(), "The type of noise to generate for the primary map.")
         .add("grooveType", this.grooveType.format(), "The type of noise to generate for the grooves.")

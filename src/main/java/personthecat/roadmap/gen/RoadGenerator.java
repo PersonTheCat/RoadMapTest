@@ -25,6 +25,7 @@ public abstract class RoadGenerator {
 
   public List<Road> generateMap(final HeightmapGenerator gen, final int x, final int y) {
     System.out.println("Generating road map " + x + "," + y);
+    final long startNs = System.nanoTime();
     final List<Road> roads = new ArrayList<>();
     final int cXO = RoadRegion.toChunkCoord(x);
     final int cYO = RoadRegion.toChunkCoord(y);
@@ -44,7 +45,8 @@ public abstract class RoadGenerator {
         }
       }
     }
-    System.out.println("map done " + x + "," + y);
+    final double time = (double) (System.nanoTime() - startNs) / 1_000_000.0;
+    System.out.printf("map done %s,%s (%.2fms)\n", x, y, time);
     return roads;
   }
 

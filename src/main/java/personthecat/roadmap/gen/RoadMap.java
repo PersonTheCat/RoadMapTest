@@ -7,6 +7,7 @@ import java.util.Arrays;
 
 public class RoadMap {
   private static final int CACHE_SIZE = 12; // will use 4 for MC
+  private static final int PREGEN_RADIUS = 2; // diameter = 5
   private final RoadRegion[] regionCache = new RoadRegion[CACHE_SIZE];
   private final RoadGenerator generator;
   private final Config config;
@@ -18,6 +19,19 @@ public class RoadMap {
     this.config = config;
     this.tracker = tracker;
     this.seed = tracker.getSeed();
+  }
+
+  public void pregen(final HeightmapGenerator mapGen, final short x, final short y) {
+    System.out.println("pre-generating roads...");
+    for (int rX = x - PREGEN_RADIUS; rX <= x + PREGEN_RADIUS; rX++) {
+      for (int rY = y - PREGEN_RADIUS; rY <= y + PREGEN_RADIUS; rY++) {
+        this.getRegion(mapGen, (short) rX, (short) rY);
+      }
+    }
+    final int n = (PREGEN_RADIUS * 2 + 1) * (PREGEN_RADIUS * 2 + 1);
+    final int rB = n * RoadRegion.LEN;
+    final int rC = n * RoadRegion.CHUNK_LEN;
+    System.out.printf("pre-generated %s road regions (%s^2 blocks, %s^2 chunks)\n", n, rB, rC);
   }
 
   public RoadRegion getRegion(final HeightmapGenerator mapGen, final short x, final short y) {

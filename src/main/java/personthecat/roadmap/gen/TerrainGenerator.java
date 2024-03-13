@@ -176,4 +176,8 @@ public class TerrainGenerator {
   public RoadMap getRoadMap() {
     return this.roadGenerator.getRoadMap();
   }
+
+  public HeightmapGenerator getMapGenerator() {
+    return this.mapGenerator;
+  }
 }

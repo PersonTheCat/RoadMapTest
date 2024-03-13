@@ -29,6 +29,11 @@ public class Main {
       final var window = new AppWindow(this.config, this.tracker, this.createNextImage(true));
       window.onKeyPressed(KeyEvent.VK_ESCAPE, AppWindow::close);
 
+      if (this.config.isPregenRoads()) {
+        final short x = RoadRegion.getRegionCoord(this.tracker.getXOffset());
+        final short y = RoadRegion.getRegionCoord(this.tracker.getYOffset());
+        this.generator.getRoadMap().pregen(this.generator.getMapGenerator(), x, y);
+      }
       window.onKeyPressed(KeyEvent.VK_SPACE, w -> {
         this.generator.next(this.rand);
         w.render(this.createNextImage(true));
