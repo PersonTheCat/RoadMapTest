@@ -159,7 +159,8 @@ public abstract class RoadGenerator {
     final VertexGraph.Target target = graph.getTarget(cX, cY, 10.0);
     assert target != null;
     for (int i = 0; i < this.config.getMaxBranches(); i++) {
-      final double aO = a + Math.PI / 2 + rand.nextFloat() * Math.PI;
+      double aO = a + Math.PI / 2 + rand.nextFloat() * Math.PI;
+      if (rand.nextBoolean()) aO = Math.PI - aO;
       final double d = min + rand.nextInt(max - min + 1);
       final int xO = (int) (cX + d * Math.cos(aO));
       final int yO = (int) (cY + d * Math.sin(aO));
