@@ -1,4 +1,4 @@
-package personthecat.roadmap;
+package personthecat.roadmap.util;
 
 import java.util.Random;
 
@@ -22,7 +22,7 @@ public final class Utils {
     return (long) cX * 341873128712L + (long) cY * 132897987541L + base;
   }
 
-  public static double stdDev(final double[] ds) {
+  public static double stdDev(final double... ds) {
     double sum = 0.0;
     for (final double d : ds) {
       sum += d;
@@ -35,5 +35,18 @@ public final class Utils {
       stdDev += Math.pow(d - mean, 2);
     }
     return Math.sqrt(stdDev / len);
+  }
+
+  public static double distance(final int x1, final int y1, final int x2, final int y2) {
+    return Math.sqrt(((x1 - x2) * (x1 - x2)) + ((y1 - y2) * (y1 - y2)));
+  }
+
+  public static float lerp(final float a, final float b, final float t) {
+    return a + t * (b - a);
+  }
+
+  public static boolean rectanglesOverlap(
+      int x1a, int y1a, int x2a, int y2a, int x1b, int y1b, int x2b, int y2b) {
+    return !(x1a < x2b && x2a > x1b && y1a > y2b && y2a < y1b);
   }
 }

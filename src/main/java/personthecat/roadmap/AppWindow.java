@@ -1,5 +1,7 @@
 package personthecat.roadmap;
 
+import personthecat.roadmap.data.Tracker;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;

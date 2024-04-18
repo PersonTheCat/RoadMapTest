@@ -1,4 +1,4 @@
-package personthecat.roadmap;
+package personthecat.roadmap.data;
 
 import java.awt.Color;
 import java.util.stream.Stream;

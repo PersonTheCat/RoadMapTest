@@ -1,13 +1,25 @@
-package personthecat.roadmap.gen;
+package personthecat.roadmap.data;
+
+import personthecat.roadmap.gen.road.Destination;
 
 @SuppressWarnings("ClassCanBeRecord")
-public class Point {
+public class Point implements Destination {
   public final int x;
   public final int y;
 
   public Point(final int x, final int y) {
     this.x = x;
     this.y = y;
+  }
+
+  @Override
+  public double distance(final int x, final int y, double _min) {
+    return Math.sqrt(((this.x - x) * (this.x - x)) + ((this.y - y) * (this.y - y)));
+  }
+
+  @Override
+  public byte getRoadLevel() {
+    return 0;
   }
 
   @Override

@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'personthecat'
-version '0.2'
+version '0.3'
 
 sourceCompatibility = JavaVersion.VERSION_16
 targetCompatibility = JavaVersion.VERSION_16

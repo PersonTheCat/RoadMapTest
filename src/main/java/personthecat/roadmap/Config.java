@@ -1,7 +1,9 @@
 package personthecat.roadmap;
 
 import personthecat.fastnoise.data.NoiseType;
-import personthecat.roadmap.gen.Road;
+import personthecat.roadmap.data.BackgroundColor;
+import personthecat.roadmap.data.Tracker;
+import personthecat.roadmap.gen.road.Road;
 import xjs.comments.CommentType;
 import xjs.core.Json;
 import xjs.core.JsonObject;
@@ -26,10 +28,10 @@ public class Config {
   private int grooveSize = 50;
   private int minY = -50;
   private int maxY = 96;
-  private int resolution = 4;
-  private int scrollAmount = 3;
-  private int scrollCoolDown = 3;
-  private int gridOpacity = 14;
+  private int resolution = 6;
+  private int scrollAmount = 6;
+  private int scrollCoolDown = 2;
+  private int gridOpacity = 0;
   private int seed = 0;
   private int xOffset = 0;
   private int yOffset = 0;
@@ -37,20 +39,26 @@ public class Config {
   private int maxRoadLength = Road.MAX_DISTANCE;
   private int shorelineCutoff = 20;
   private int mountainCutoff = 40;
-  private float frequency = 0.0025F;
+  private int maxBranches = 15;
+  private int pregenThreadCount = 4;
+  private int pregenRadius = 15;
+  private float frequency = 0.00125F;
   private float grooveFrequency = 0.02F;
-  private float surfaceScale = 0.6F;
-  private float sideViewAngle = 0.8F;
+  private float surfaceScale = 0.5F;
+  private float sideViewAngle = 0.85F;
   private float zoom = 1.25F;
-  private float roadChance = 1.0F / 5000.0F;
+  private float roadChance = 1.0F / 4000.0F;
+  private float pregenSkew = 0.25F;
   private boolean sideView = false;
   private boolean mountains = true;
   private boolean enableRoads = true;
   private boolean persistRoads = true;
+  private boolean generatePartial = true;
   private boolean pregenRoads = false;
+  private boolean debugPregenShape = true;
   private boolean highlightRoadEndpoints = false;
-  private NoiseType mapType = NoiseType.SIMPLEX2S;
-  private NoiseType grooveType = NoiseType.PERLIN;
+  private NoiseType mapType = NoiseType.SIMPLEX;
+  private NoiseType grooveType = NoiseType.CUBIC;
   private Color backgroundColor = Color.BLACK;
   private boolean hasErrors = false;
   private boolean missingFields = false;
@@ -125,6 +133,18 @@ public class Config {
     return this.mountainCutoff;
   }
 
+  public int getMaxBranches() {
+    return this.maxBranches;
+  }
+
+  public int getPregenThreadCount() {
+    return this.pregenThreadCount;
+  }
+
+  public int getPregenRadius() {
+    return this.pregenRadius;
+  }
+
   public float getFrequency() {
     return this.frequency;
   }
@@ -149,6 +169,10 @@ public class Config {
     return this.roadChance;
   }
 
+  public float getPregenSkew() {
+    return this.pregenSkew;
+  }
+
   public boolean isSideView() {
     return this.sideView;
   }
@@ -165,8 +189,16 @@ public class Config {
     return this.persistRoads;
   }
 
+  public boolean isGeneratePartial() {
+    return this.generatePartial;
+  }
+
   public boolean isPregenRoads() {
     return this.pregenRoads;
+  }
+
+  public boolean isDebugPregenShape() {
+    return this.debugPregenShape;
   }
 
   public boolean isHighlightRoadEndpoints() {
@@ -235,8 +267,8 @@ public class Config {
         .set(i -> this.minY = i);
     this.getInt(json, "maxY")
         .changesTerrainFeatures()
-        .filter(i -> i > 0 && i <= 128)
-        .error("Must be 1 ~ 128")
+        .filter(i -> i > 0 && i <= 128 && i >= this.minY)
+        .error("Must be 1 ~ 128 && >= min")
         .get(() -> this.maxY)
         .set(i -> this.maxY = i);
     this.getInt(json, "resolution")
@@ -266,8 +298,8 @@ public class Config {
         .set(i -> this.minRoadLength = i);
     this.getInt(json, "maxRoadLength")
         .changesTerrainFeatures()
-        .filter(i -> i >= 0 && i <= Road.MAX_DISTANCE)
-        .error("Must be 0 ~ " + Road.MAX_DISTANCE)
+        .filter(i -> i >= 0 && i <= Road.MAX_DISTANCE && i >= this.minRoadLength)
+        .error("Must be 0 ~ " + Road.MAX_DISTANCE + " && >= min")
         .get(() -> this.maxRoadLength)
         .set(i -> this.maxRoadLength = i);
     this.getInt(json, "shorelineCutoff")
@@ -282,6 +314,20 @@ public class Config {
         .error("Must be in height bounds")
         .get(() -> this.mountainCutoff)
         .set(i -> this.mountainCutoff = i);
+    this.getInt(json, "maxBranches")
+        .changesTerrainFeatures()
+        .filter(i -> i >= 0 && i <= 64)
+        .error("Must be 0 ~ 64")
+        .get(() -> this.maxBranches)
+        .set(i -> this.maxBranches = i);
+    this.getInt(json, "pregenThreadCount")
+        .filter(i -> i > 0 && i <= 8)
+        .error("Must be 1 ~ 8")
+        .set(i -> this.pregenThreadCount = i);
+    this.getInt(json, "pregenRadius")
+        .filter(i -> i > 0 && i < 128)
+        .error("Must be 1 ~ 128")
+        .set(i -> this.pregenRadius = i);
     this.getFloat(json, "frequency")
         .changesTerrainFeatures()
         .filter(f -> f > 0)
@@ -314,6 +360,10 @@ public class Config {
         .error("Must be 0 ~ 1")
         .get(() -> this.roadChance)
         .set(f -> this.roadChance = f);
+    this.getFloat(json, "pregenSkew")
+        .filter(f -> f >= 0 && f <= 1)
+        .error("Must be 0 - 1")
+        .set(f -> this.pregenSkew = f);
     this.getBoolean(json, "mountains")
         .changesTerrainFeatures()
         .get(() -> this.mountains)
@@ -321,7 +371,9 @@ public class Config {
     this.getBoolean(json, "sideView").set(b -> this.sideView = b);
     this.getBoolean(json, "enableRoads").set(b -> this.enableRoads = b);
     this.getBoolean(json, "persistRoads").set(b -> this.persistRoads = b);
+    this.getBoolean(json, "generatePartial").set(b -> this.generatePartial = b);
     this.getBoolean(json, "pregenRoads").set(b -> this.pregenRoads = b);
+    this.getBoolean(json, "debugPregenShape").set(b -> this.debugPregenShape = b);
     this.getBoolean(json, "highlightRoadEndpoints").set(b -> this.highlightRoadEndpoints = b);
     this.getEnum(json, "mapType", NoiseType.class, NoiseType::from)
         .changesTerrainFeatures()
@@ -408,19 +460,25 @@ public class Config {
         .add("yOffset", this.yOffset, "The number of blocks to offset the generator on the y-axis.")
         .add("minRoadLength", this.minRoadLength, "The minimum length any road can be.")
         .add("maxRoadLength", this.maxRoadLength, "The maximum length any road can be.")
-        .add("shorelineCutoff", this.shorelineCutoff, "The minimum height at which to avoid shorelines")
-        .add("mountainCutoff", this.mountainCutoff, "The minimum height at which to avoid mountains")
+        .add("shorelineCutoff", this.shorelineCutoff, "The minimum height at which to avoid shorelines.")
+        .add("mountainCutoff", this.mountainCutoff, "The minimum height at which to avoid mountains.")
+        .add("maxBranches", this.maxBranches, "The max number of road branches at any level.")
+        .add("pregenThreadCount", this.pregenThreadCount, "The number of threads on which the pre-generator can run.")
+        .add("pregenRadius", this.pregenRadius, "The radius of road regions to pre-generate (d = r * 2 + 1)")
         .add("frequency", this.frequency, "Noise frequency for the main noise map.")
         .add("grooveFrequency", this.grooveFrequency, "Frequency for the groove noise.")
         .add("surfaceScale", this.surfaceScale, "The terrain scale when above sea level.")
         .add("sideViewAngle", this.sideViewAngle, "The ratio at which to drop closer pixels.")
         .add("zoom", this.zoom, "The zoom ratio in side view mode, e.g. > 1 to zoom in, < 1 to zoom out.")
         .add("roadChance", this.roadChance, "The chance of a road origin spawning in any given chunk.")
+        .add("pregenSkew", this.pregenSkew, "An optimization which controls the ratio of regions pre-generated diagonally.")
         .add("mountains", this.mountains, "Whether to enable mountainous terrain scaling.")
         .add("sideView", this.sideView, "Whether to display the terrain in side view mode.")
         .add("enableRoads", this.enableRoads, "Whether to generate and display roads on the map.")
         .add("persistRoads", this.persistRoads, "Whether to save roads to the disk as they generate.")
-        .add("pregenRoads", this.pregenRoads, "Whether to pre-generate 25 road regions surrounding the current offset on startup.")
+        .add("generatePartial", this.generatePartial, "Whether to persist road data into un-generated regions to avoid redundancy.")
+        .add("pregenRoads", this.pregenRoads, "Whether to pre-generate road regions surrounding the current offset on startup.")
+        .add("debugPregenShape", this.debugPregenShape, "Whether to log a debug image of the shape of the regions generated.")
         .add("highlightRoadEndpoints", this.highlightRoadEndpoints, "Debug option to clearly show where road endpoints are.")
         .add("mapType", this.mapType.format(), "The type of noise to generate for the primary map.")
         .add("grooveType", this.grooveType.format(), "The type of noise to generate for the grooves.")

@@ -1,8 +1,9 @@
-package personthecat.roadmap.gen;
+package personthecat.roadmap.gen.road;
 
 import personthecat.roadmap.Config;
-import personthecat.roadmap.Tracker;
-import personthecat.roadmap.Utils;
+import personthecat.roadmap.data.Tracker;
+import personthecat.roadmap.util.Utils;
+import personthecat.roadmap.gen.HeightmapGenerator;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -80,19 +81,22 @@ public class RoadImageGenerator {
   private void generateChunk(final BufferedImage image, final int cX, final int cY, final Random rand) {
     final int aX = cX << 4;
     final int aY = cY << 4;
-    final short rX = RoadRegion.getRegionCoord(aX);
-    final short rY = RoadRegion.getRegionCoord(aY);
+    final short rX = RoadRegion.absToRegion(aX);
+    final short rY = RoadRegion.absToRegion(aY);
     final RoadRegion region = this.roadMap.getRegion(this.mapGen, rX, rY);
-    for (final Road road : region.getData()) {
-      if (!road.containsPoint(rX, rY, aX, aY)) {
+    for (final RoadNetwork network : region) {
+      if (!network.containsPoint(aX, aY)) {
         continue;
       }
-      for (final RoadVertex vertex : road.vertices()) {
-        final int vAX = RoadRegion.getAbsoluteCoord(rX) + vertex.relX;
-        final int vAY = RoadRegion.getAbsoluteCoord(rY) + vertex.relY;
-        final double d = distance(vAX, vAY, aX + 8, aY + 8);
-        if (d < vertex.radius + 16) {
-          this.trace(image, vertex, rand, aX, aY, vAX, vAY);
+      for (final Road road : network.roads) {
+        if (!road.containsPoint(aX, aY)) {
+          continue;
+        }
+        for (final RoadVertex vertex : road.vertices()) {
+          final double d = Utils.distance(vertex.x, vertex.y, aX + 8, aY + 8);
+          if (d < vertex.radius + 16) {
+            this.trace(image, vertex, rand, road.level(), aX, aY, vertex.x, vertex.y);
+          }
         }
       }
     }
@@ -112,12 +116,8 @@ public class RoadImageGenerator {
     }
   }
 
-  private static double distance(final int x1, final int y1, final int x2, final int y2) {
-    return Math.sqrt(((x1 - x2) * (x1 - x2)) + ((y1 - y2) * (y1 - y2)));
-  }
-
   private void trace(
-      BufferedImage image, RoadVertex vertex, Random rand, int aX, int aY, int vAX, int vAY) {
+      BufferedImage image, RoadVertex vertex, Random rand, int l, int aX, int aY, int vAX, int vAY) {
     final int xO = this.tracker.getXOffset();
     final int yO = this.tracker.getYOffset();
     final int color =
@@ -128,7 +128,7 @@ public class RoadImageGenerator {
       final int dX2 = (x - vAX) * (x - vAX);
       for (int y = aY; y < aY + 16; y++) {
         final int dY2 = (y - vAY) * (y - vAY);
-        if (dX2 + dY2 < vertex.radius) {
+        if (Math.sqrt(dX2 + dY2) < vertex.radius) {
           if (vertex.integrity == 1 || rand.nextFloat() <= vertex.integrity) {
             image.setRGB(x - xO, y - yO, color);
           }

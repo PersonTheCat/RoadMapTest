@@ -30,4 +30,5 @@ hs_err_pid*
 build/
 
 config.xjs
-roads/
+regions/
+networks/

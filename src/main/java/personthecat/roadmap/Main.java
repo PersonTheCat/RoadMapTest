@@ -1,6 +1,8 @@
 package personthecat.roadmap;
 
-import personthecat.roadmap.gen.RoadRegion;
+import personthecat.roadmap.data.Tracker;
+import personthecat.roadmap.gen.road.RoadNetwork;
+import personthecat.roadmap.gen.road.RoadRegion;
 import personthecat.roadmap.gen.TerrainGenerator;
 import xjs.serialization.JsonContext;
 import xjs.serialization.writer.JsonWriterOptions;
@@ -30,8 +32,8 @@ public class Main {
       window.onKeyPressed(KeyEvent.VK_ESCAPE, AppWindow::close);
 
       if (this.config.isPregenRoads()) {
-        final short x = RoadRegion.getRegionCoord(this.tracker.getXOffset());
-        final short y = RoadRegion.getRegionCoord(this.tracker.getYOffset());
+        final short x = RoadRegion.absToRegion(this.tracker.getXOffset());
+        final short y = RoadRegion.absToRegion(this.tracker.getYOffset());
         this.generator.getRoadMap().pregen(this.generator.getMapGenerator(), x, y);
       }
       window.onKeyPressed(KeyEvent.VK_SPACE, w -> {
@@ -141,6 +143,7 @@ public class Main {
       if (config.terrainFeaturesUpdated()) {
         System.out.println("Terrain features updated. Deleting old roads...");
         RoadRegion.deleteAllRegions();
+        RoadNetwork.deleteAllNetworks();
         this.generator.getRoadMap().clearCache();
       }
       if (oH != this.config.getChunkHeight() || oW != this.config.getChunkWidth()) {

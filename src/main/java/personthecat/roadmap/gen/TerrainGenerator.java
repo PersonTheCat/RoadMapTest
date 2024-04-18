@@ -1,7 +1,9 @@
 package personthecat.roadmap.gen;
 
 import personthecat.roadmap.Config;
-import personthecat.roadmap.Tracker;
+import personthecat.roadmap.data.Tracker;
+import personthecat.roadmap.gen.road.RoadImageGenerator;
+import personthecat.roadmap.gen.road.RoadMap;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

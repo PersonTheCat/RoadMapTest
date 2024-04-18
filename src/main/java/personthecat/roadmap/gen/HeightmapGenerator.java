@@ -3,7 +3,7 @@ package personthecat.roadmap.gen;
 import personthecat.fastnoise.FastNoise;
 import personthecat.fastnoise.data.*;
 import personthecat.roadmap.Config;
-import personthecat.roadmap.Tracker;
+import personthecat.roadmap.data.Tracker;
 
 public class HeightmapGenerator {
   private final Config config;

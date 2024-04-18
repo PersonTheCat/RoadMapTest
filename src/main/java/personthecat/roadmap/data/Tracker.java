@@ -1,4 +1,6 @@
-package personthecat.roadmap;
+package personthecat.roadmap.data;
+
+import personthecat.roadmap.Config;
 
 import java.util.Random;
 
